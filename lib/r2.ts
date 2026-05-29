@@ -36,3 +36,8 @@ export async function getPresignedDownloadUrl(key: string, expiresIn = 3600): Pr
 export function keyFromUrl(url: string): string {
   return url.replace(`${PUBLIC_URL}/`, '')
 }
+
+export function buildKey(userId: string, filename: string): string {
+  const sanitized = filename.replace(/[^a-zA-Z0-9.\-_一-龥]/g, '_')
+  return `books/${userId}/${Date.now()}_${sanitized}`
+}
