@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  username     String   @unique
+  avatarUrl    String?
+  bio          String?
+  createdAt    DateTime @default(now())
+
+  books               Book[]
+  booklist            Booklist?
+  readingStatuses     ReadingStatus[]
+  activities          ActivityFeed[]
+  sentFriendships     Friendship[]   @relation("requester")
+  receivedFriendships Friendship[]   @relation("addressee")
+}
+
+model Book {
+  id            String     @id @default(cuid())
+  userId        String
+  title         String
+  author        String?
+  fileUrl       String
+  coverUrl      String?
+  synopsis      String?
+  genre         String?
+  emotionTag    String?
+  tags          String[]
+  status        BookStatus @default(WANT)
+  chapterIndex  Int        @default(0)
+  charOffset    Int        @default(0)
+  fileSizeBytes Int?
+  encoding      String?
+  chapterCount  Int?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  booklistEntries BooklistEntry[]
+  readingStatuses ReadingStatus[]
+  activities      ActivityFeed[]
+}
+
+enum BookStatus {
+  READING
+  FINISHED
+  WANT
+}
+
+model Friendship {
+  id          String           @id @default(cuid())
+  requesterId String
+  addresseeId String
+  status      FriendshipStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
+
+  requester User @relation("requester", fields: [requesterId], references: [id], onDelete: Cascade)
+  addressee User @relation("addressee", fields: [addresseeId], references: [id], onDelete: Cascade)
+
+  @@unique([requesterId, addresseeId])
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+}
+
+model Booklist {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  title     String   @default("我的精选")
+  isPublic  Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entries BooklistEntry[]
+}
+
+model BooklistEntry {
+  id         String @id @default(cuid())
+  booklistId String
+  bookId     String
+  order      Int
+
+  booklist Booklist @relation(fields: [booklistId], references: [id], onDelete: Cascade)
+  book     Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@unique([booklistId, bookId])
+}
+
+model ReadingStatus {
+  id         String   @id @default(cuid())
+  userId     String
+  bookId     String
+  statusText String?
+  updatedAt  DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, bookId])
+}
+
+model ActivityFeed {
+  id         String     @id @default(cuid())
+  userId     String
+  actionType ActionType
+  bookId     String?
+  metadata   Json?
+  createdAt  DateTime   @default(now())
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book Book? @relation(fields: [bookId], references: [id], onDelete: SetNull)
+}
+
+enum ActionType {
+  BOOK_ADDED
+  READING_STARTED
+  BOOK_FINISHED
+  BOOKLIST_UPDATED
+}
