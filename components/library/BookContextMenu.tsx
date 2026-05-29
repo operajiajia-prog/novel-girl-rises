@@ -66,17 +66,20 @@ export default function BookContextMenu({
   const handleStatusChange = useCallback(
     async (status: BookStatus) => {
       closeMenu()
-      // Optimistic update
-      onStatusChange(book.id, status)
       try {
-        await fetch(`/api/books/${book.id}`, {
+        const res = await fetch(`/api/books/${book.id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ status }),
         })
-        router.refresh()
+        if (res.ok) {
+          onStatusChange(book.id, status)
+          router.refresh()
+        } else {
+          router.refresh() // re-sync on error
+        }
       } catch {
-        // Swallow — parent will re-sync on next refresh
+        router.refresh() // re-sync on network failure
       }
     },
     [book.id, closeMenu, onStatusChange, router]
@@ -97,7 +100,7 @@ export default function BookContextMenu({
 
   return (
     <div
-      style={{ position: 'relative', display: 'contents' }}
+      style={{ display: 'contents' }}
       onTouchStart={handleTouchStart}
       onTouchEnd={cancelLongPress}
       onTouchMove={cancelLongPress}
