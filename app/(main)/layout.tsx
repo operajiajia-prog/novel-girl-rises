@@ -14,7 +14,9 @@ export default async function MainLayout({ children }: { children: React.ReactNo
         className="flex-1 overflow-y-auto"
         style={{ paddingBottom: 'calc(60px + env(safe-area-inset-bottom))' }}
       >
-        {children}
+        <div style={{ maxWidth: '1024px', margin: '0 auto', padding: '0 16px' }}>
+          {children}
+        </div>
       </main>
       <TabBar />
     </div>
