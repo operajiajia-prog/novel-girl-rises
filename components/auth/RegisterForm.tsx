@@ -129,7 +129,7 @@ export default function RegisterForm() {
         className="w-full font-semibold"
         style={{
           background: isSubmitting ? 'var(--bg-elevated)' : 'var(--accent-500)',
-          color: 'white',
+          color: 'var(--color-primary-foreground)',
           borderRadius: 'var(--radius-md)',
           height: '50px',
           fontSize: '15px',
