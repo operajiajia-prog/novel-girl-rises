@@ -17,7 +17,7 @@ model User {
 
   books               Book[]
   booklist            Booklist?
-  readingStatuses     ReadingStatus[]
+  readingNotes        ReadingNote[]
   activities          ActivityFeed[]
   sentFriendships     Friendship[]   @relation("requester")
   receivedFriendships Friendship[]   @relation("addressee")
@@ -45,7 +45,7 @@ model Book {
 
   user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   booklistEntries BooklistEntry[]
-  readingStatuses ReadingStatus[]
+  readingNotes    ReadingNote[]
   activities      ActivityFeed[]
 }
 
@@ -96,7 +96,7 @@ model BooklistEntry {
   @@unique([booklistId, bookId])
 }
 
-model ReadingStatus {
+model ReadingNote {
   id         String   @id @default(cuid())
   userId     String
   bookId     String
@@ -119,6 +119,8 @@ model ActivityFeed {
 
   user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   book Book? @relation(fields: [bookId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt(sort: Desc)])
 }
 
 enum ActionType {
