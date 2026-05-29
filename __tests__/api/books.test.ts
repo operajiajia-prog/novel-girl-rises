@@ -16,7 +16,7 @@ describe('GET /api/books', () => {
   beforeEach(() => vi.clearAllMocks())
 
   it('returns 401 when not authenticated', async () => {
-    mockAuth.mockResolvedValueOnce(null)
+    mockAuth.mockResolvedValueOnce(null as any)
     const res = await GET()
     expect(res.status).toBe(401)
   })

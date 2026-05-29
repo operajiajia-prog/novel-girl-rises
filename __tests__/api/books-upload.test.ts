@@ -39,7 +39,7 @@ describe('POST /api/books/upload', () => {
   beforeEach(() => vi.clearAllMocks())
 
   it('returns 401 when not authenticated', async () => {
-    mockAuth.mockResolvedValueOnce(null)
+    mockAuth.mockResolvedValueOnce(null as any)
     const res = await POST(makeRequest())
     expect(res.status).toBe(401)
   })
