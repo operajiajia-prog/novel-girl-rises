@@ -2,19 +2,29 @@
 
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import type { Book } from '@prisma/client'
+import type { Book, BookStatus } from '@prisma/client'
 import BookGrid from './BookGrid'
 import UploadZone from './UploadZone'
+import FilterPills from '@/components/library/FilterPills'
 
 type UploadedBook = { id: string; title: string }
 
 interface LibraryClientProps {
   initialBooks: Pick<Book, 'id' | 'title' | 'author' | 'coverUrl' | 'genre' | 'status' | 'chapterIndex' | 'chapterCount' | 'updatedAt'>[]
+  initialFilter?: BookStatus | 'ALL'
 }
 
-export default function LibraryClient({ initialBooks }: LibraryClientProps) {
+export default function LibraryClient({ initialBooks, initialFilter = 'ALL' }: LibraryClientProps) {
   const router = useRouter()
   const [showUpload, setShowUpload] = useState(initialBooks.length === 0)
+
+  const handleFilterChange = useCallback((status: BookStatus | 'ALL') => {
+    if (status === 'ALL') {
+      router.push('/library')
+    } else {
+      router.push(`/library?status=${status}`)
+    }
+  }, [router])
 
   const handleUploadSuccess = useCallback((_book: UploadedBook) => {
     setShowUpload(false)
@@ -45,6 +55,7 @@ export default function LibraryClient({ initialBooks }: LibraryClientProps) {
 
   return (
     <div className="space-y-4">
+      <FilterPills active={initialFilter} onChange={handleFilterChange} />
       <div className="flex justify-end">
         <button
           type="button"

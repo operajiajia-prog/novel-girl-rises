@@ -2,13 +2,24 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import LibraryClient from '@/components/books/LibraryClient'
+import type { BookStatus } from '@prisma/client'
 
-export default async function LibraryPage() {
+export default async function LibraryPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string }>
+}) {
   const session = await auth()
   if (!session?.user?.id) redirect('/login')
 
+  const { status } = await searchParams
+  const where = {
+    userId: session.user.id,
+    ...(status && status !== 'ALL' ? { status: status as BookStatus } : {}),
+  }
+
   const books = await db.book.findMany({
-    where: { userId: session.user.id },
+    where,
     orderBy: { updatedAt: 'desc' },
     select: {
       id: true,
@@ -41,7 +52,10 @@ export default async function LibraryPage() {
         </span>
       </div>
 
-      <LibraryClient initialBooks={books} />
+      <LibraryClient
+        initialBooks={books}
+        initialFilter={(status as BookStatus | 'ALL' | undefined) ?? 'ALL'}
+      />
     </div>
   )
 }
