@@ -100,7 +100,7 @@ export default function SearchBar({ value, onChange }: SearchBarProps) {
             border: 'none',
             cursor: 'pointer',
             background: 'var(--text-disabled)',
-            color: 'var(--bg-base)',
+            color: 'var(--color-primary-foreground)',
             fontSize: '14px',
             lineHeight: 1,
             padding: 0,

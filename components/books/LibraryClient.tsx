@@ -83,7 +83,7 @@ export default function LibraryClient({ initialBooks, initialFilter = 'ALL' }: L
             fontWeight: 600,
             borderRadius: '12px',
             background: 'var(--accent-500)',
-            color: 'var(--bg-base)',
+            color: 'var(--color-primary-foreground)',
             border: 'none',
             cursor: 'pointer',
             padding: '8px 18px',

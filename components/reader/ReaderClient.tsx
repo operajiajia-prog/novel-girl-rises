@@ -17,7 +17,7 @@ interface Props {
 }
 
 const STORAGE_KEY = 'reader-settings'
-const DEFAULT_SETTINGS: ReaderSettings = { fontSize: 17, bgColor: '#000000', lineHeight: 1.85 }
+const DEFAULT_SETTINGS: ReaderSettings = { fontSize: 17, bgColor: '#F5E6C8', lineHeight: 1.85 }
 
 function loadSettings(): ReaderSettings {
   if (typeof window === 'undefined') return DEFAULT_SETTINGS
@@ -119,7 +119,7 @@ export default function ReaderClient({ book, chapters }: Props) {
           position: 'absolute', top: 0, left: 0, right: 0,
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '16px 20px',
-          background: 'linear-gradient(to bottom, rgba(0,0,0,0.6), transparent)',
+          background: 'linear-gradient(to bottom, rgba(50,35,10,0.18), transparent)',
         }}>
           <button
             type="button"
@@ -145,7 +145,7 @@ export default function ReaderClient({ book, chapters }: Props) {
           position: 'absolute', bottom: 0, left: 0, right: 0,
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '20px',
-          background: 'linear-gradient(to top, rgba(0,0,0,0.6), transparent)',
+          background: 'linear-gradient(to top, rgba(50,35,10,0.18), transparent)',
         }}>
           <button
             type="button"

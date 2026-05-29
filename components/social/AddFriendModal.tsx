@@ -198,7 +198,7 @@ export default function AddFriendModal({ onClose }: AddFriendModalProps) {
                         borderRadius: '10px',
                         border: 'none',
                         background: 'var(--accent-500)',
-                        color: 'var(--bg-base)',
+                        color: 'var(--color-primary-foreground)',
                         fontSize: '13px',
                         fontWeight: 600,
                         cursor: 'pointer',

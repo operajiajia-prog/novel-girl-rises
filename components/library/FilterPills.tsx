@@ -42,7 +42,7 @@ export default function FilterPills({ active, onChange }: FilterPillsProps) {
               whiteSpace: 'nowrap',
               flexShrink: 0,
               background: isActive ? 'var(--accent-500)' : 'var(--bg-elevated)',
-              color: isActive ? 'var(--bg-base)' : 'var(--text-secondary)',
+              color: isActive ? 'var(--color-primary-foreground)' : 'var(--text-secondary)',
               transition: 'background 200ms, color 200ms',
               fontSize: '14px',
             }}

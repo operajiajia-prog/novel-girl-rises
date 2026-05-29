@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="zh-CN"
-      className={`${notoSerifSC.variable} ${jetbrainsMono.variable} h-full antialiased dark`}
+      className={`${notoSerifSC.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <SessionProvider>

@@ -77,7 +77,7 @@ export default function UploadZone({ onSuccess }: UploadZoneProps) {
         style={{
           border: `2px dashed ${isDragOver ? 'var(--accent-500)' : 'var(--border-default)'}`,
           borderRadius: '12px',
-          background: isDragOver ? 'var(--accent-950)' : 'transparent',
+          background: isDragOver ? 'var(--accent-100)' : 'transparent',
           padding: '40px 24px',
           textAlign: 'center',
           cursor: uploading ? 'not-allowed' : 'pointer',
