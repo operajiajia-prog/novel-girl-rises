@@ -27,7 +27,7 @@ export default function FriendCard({ friend, readingBook }: FriendCardProps) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: friend.avatarUrl ? 'transparent' : 'var(--accent-950)',
+          background: friend.avatarUrl ? 'transparent' : 'var(--accent-100)',
         }}
       >
         {friend.avatarUrl ? (

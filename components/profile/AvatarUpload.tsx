@@ -66,7 +66,7 @@ export default function AvatarUpload({
         borderRadius: '50%',
         overflow: 'hidden',
         border: '2px solid var(--border-default)',
-        background: previewUrl ? 'transparent' : 'var(--accent-950)',
+        background: previewUrl ? 'transparent' : 'var(--accent-100)',
         cursor: isUploading ? 'wait' : 'pointer',
         flexShrink: 0,
         display: 'flex',

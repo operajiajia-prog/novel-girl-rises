@@ -28,7 +28,7 @@ export default function FriendRequestCard({ requester, onAccept, onReject }: Fri
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: requester.avatarUrl ? 'transparent' : 'var(--accent-950)',
+          background: requester.avatarUrl ? 'transparent' : 'var(--accent-100)',
         }}
       >
         {requester.avatarUrl ? (

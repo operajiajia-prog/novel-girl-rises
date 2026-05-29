@@ -155,7 +155,7 @@ export default function AddFriendModal({ onClose }: AddFriendModalProps) {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      background: user.avatarUrl ? 'transparent' : 'var(--accent-950)',
+                      background: user.avatarUrl ? 'transparent' : 'var(--accent-100)',
                     }}
                   >
                     {user.avatarUrl ? (

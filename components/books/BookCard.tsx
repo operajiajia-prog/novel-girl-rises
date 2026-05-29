@@ -73,9 +73,25 @@ export default function BookCard({ book, onStatusChange, onDelete }: BookCardPro
             style={{
               width: '100%',
               height: '100%',
-              background: `linear-gradient(135deg, var(--accent-950), var(--bg-elevated))`,
+              background: `linear-gradient(160deg, var(--accent-100), var(--bg-elevated))`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
-          />
+          >
+            <span
+              style={{
+                fontFamily: '"Noto Serif SC", serif',
+                fontSize: '48px',
+                fontWeight: 700,
+                color: 'var(--accent-600)',
+                userSelect: 'none',
+                opacity: 0.7,
+              }}
+            >
+              {book.title[0] ?? '书'}
+            </span>
+          </div>
         )}
 
         {/* Genre badge */}
@@ -86,8 +102,8 @@ export default function BookCard({ book, onStatusChange, onDelete }: BookCardPro
               top: '8px',
               right: '8px',
               borderRadius: '999px',
-              background: 'var(--accent-950)',
-              color: 'var(--accent-400)',
+              background: 'rgba(50, 35, 10, 0.55)',
+              color: 'oklch(0.99 0 0)',
               fontSize: '11px',
               padding: '2px 7px',
               lineHeight: '1.4',

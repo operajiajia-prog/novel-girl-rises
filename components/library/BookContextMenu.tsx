@@ -175,7 +175,7 @@ export default function BookContextMenu({
                 border: 'none',
                 cursor: 'pointer',
                 fontSize: '15px',
-                color: 'var(--destructive, #FF453A)',
+                color: 'var(--color-danger)',
               }}
             >
               删除
