@@ -1,5 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import type { BookStatus } from '@prisma/client'
+import BookContextMenu from '@/components/library/BookContextMenu'
 
 type BookCardProps = {
   book: {
@@ -13,15 +15,17 @@ type BookCardProps = {
     chapterCount?: number | null
     updatedAt?: Date | null
   }
+  onStatusChange?: (id: string, status: BookStatus) => void
+  onDelete?: (id: string) => void
 }
 
-export default function BookCard({ book }: BookCardProps) {
+export default function BookCard({ book, onStatusChange, onDelete }: BookCardProps) {
   const progress =
     book.chapterCount && book.chapterCount > 0
       ? Math.round(((book.chapterIndex ?? 0) / book.chapterCount) * 100)
       : 0
 
-  return (
+  const cardContent = (
     <Link
       href={`/reader/${book.id}`}
       style={{
@@ -139,4 +143,18 @@ export default function BookCard({ book }: BookCardProps) {
       ) : null}
     </Link>
   )
+
+  if (onStatusChange && onDelete) {
+    return (
+      <BookContextMenu
+        book={{ id: book.id, status: book.status as BookStatus }}
+        onStatusChange={onStatusChange}
+        onDelete={onDelete}
+      >
+        {cardContent}
+      </BookContextMenu>
+    )
+  }
+
+  return cardContent
 }

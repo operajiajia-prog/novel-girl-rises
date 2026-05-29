@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { downloadFile, keyFromUrl } from '@/lib/r2'
+import { deleteFile, downloadFile, keyFromUrl } from '@/lib/r2'
 import { parseTxtFile } from '@/lib/txt-parser'
+import type { BookStatus } from '@prisma/client'
+
+const VALID_STATUSES: BookStatus[] = ['READING', 'WANT', 'FINISHED']
 
 export async function GET(
   _request: Request,
@@ -34,4 +37,48 @@ export async function GET(
       content: c.content,
     })),
   })
+}
+
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await auth()
+  if (!session?.user?.id) return NextResponse.json({ error: '未登录' }, { status: 401 })
+
+  const { id } = await params
+  const book = await db.book.findUnique({ where: { id, userId: session.user.id } })
+  if (!book) return NextResponse.json({ error: '书籍不存在' }, { status: 404 })
+
+  const body = await request.json() as { status?: unknown }
+  const { status } = body
+
+  if (!VALID_STATUSES.includes(status as BookStatus)) {
+    return NextResponse.json({ error: '无效的状态值' }, { status: 400 })
+  }
+
+  const updated = await db.book.update({
+    where: { id },
+    data: { status: status as BookStatus },
+  })
+
+  return NextResponse.json(updated)
+}
+
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await auth()
+  if (!session?.user?.id) return NextResponse.json({ error: '未登录' }, { status: 401 })
+
+  const { id } = await params
+  const book = await db.book.findUnique({ where: { id, userId: session.user.id } })
+  if (!book) return NextResponse.json({ error: '书籍不存在' }, { status: 404 })
+
+  const key = keyFromUrl(book.fileUrl)
+  await deleteFile(key)
+  await db.book.delete({ where: { id } })
+
+  return NextResponse.json({ ok: true })
 }

@@ -1,5 +1,6 @@
 import BookCard from './BookCard'
 import BookCardSkeleton from './BookCardSkeleton'
+import type { BookStatus } from '@prisma/client'
 
 type Book = {
   id: string
@@ -17,12 +18,16 @@ type BookGridProps = {
   books?: Book[]
   loading?: boolean
   skeletonCount?: number
+  onStatusChange?: (id: string, status: BookStatus) => void
+  onDelete?: (id: string) => void
 }
 
 export default function BookGrid({
   books = [],
   loading = false,
   skeletonCount = 6,
+  onStatusChange,
+  onDelete,
 }: BookGridProps) {
   return (
     <div
@@ -36,7 +41,14 @@ export default function BookGrid({
         ? Array.from({ length: skeletonCount }).map((_, i) => (
             <BookCardSkeleton key={i} />
           ))
-        : books.map((book) => <BookCard key={book.id} book={book} />)}
+        : books.map((book) => (
+            <BookCard
+              key={book.id}
+              book={book}
+              onStatusChange={onStatusChange}
+              onDelete={onDelete}
+            />
+          ))}
     </div>
   )
 }

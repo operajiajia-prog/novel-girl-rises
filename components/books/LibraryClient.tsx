@@ -9,9 +9,10 @@ import FilterPills from '@/components/library/FilterPills'
 import SearchBar from '@/components/library/SearchBar'
 
 type UploadedBook = { id: string; title: string }
+type LibraryBook = Pick<Book, 'id' | 'title' | 'author' | 'coverUrl' | 'genre' | 'status' | 'chapterIndex' | 'chapterCount' | 'updatedAt'>
 
 interface LibraryClientProps {
-  initialBooks: Pick<Book, 'id' | 'title' | 'author' | 'coverUrl' | 'genre' | 'status' | 'chapterIndex' | 'chapterCount' | 'updatedAt'>[]
+  initialBooks: LibraryBook[]
   initialFilter?: BookStatus | 'ALL'
 }
 
@@ -19,11 +20,12 @@ export default function LibraryClient({ initialBooks, initialFilter = 'ALL' }: L
   const router = useRouter()
   const [showUpload, setShowUpload] = useState(initialBooks.length === 0)
   const [searchQuery, setSearchQuery] = useState('')
+  const [books, setBooks] = useState<LibraryBook[]>(initialBooks)
 
   const filtered = useMemo(() =>
-    initialBooks.filter(b =>
+    books.filter(b =>
       b.title.includes(searchQuery) || (b.author ?? '').includes(searchQuery)
-    ), [initialBooks, searchQuery])
+    ), [books, searchQuery])
 
   const handleFilterChange = useCallback((status: BookStatus | 'ALL') => {
     if (status === 'ALL') {
@@ -37,6 +39,14 @@ export default function LibraryClient({ initialBooks, initialFilter = 'ALL' }: L
     setShowUpload(false)
     router.refresh()
   }, [router])
+
+  const handleStatusChange = useCallback((id: string, status: BookStatus) => {
+    setBooks(prev => prev.map(b => b.id === id ? { ...b, status } : b))
+  }, [])
+
+  const handleDelete = useCallback((id: string) => {
+    setBooks(prev => prev.filter(b => b.id !== id))
+  }, [])
 
   if (showUpload) {
     return (
@@ -82,7 +92,7 @@ export default function LibraryClient({ initialBooks, initialFilter = 'ALL' }: L
           + 上传小说
         </button>
       </div>
-      <BookGrid books={filtered} />
+      <BookGrid books={filtered} onStatusChange={handleStatusChange} onDelete={handleDelete} />
     </div>
   )
 }
