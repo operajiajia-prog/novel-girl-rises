@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Book, BookStatus } from '@/types'
 import BookGrid from './BookGrid'
 import UploadZone from './UploadZone'
 import FilterPills from '@/components/library/FilterPills'
+import SearchBar from '@/components/library/SearchBar'
 
 type UploadedBook = { id: string; title: string }
 
@@ -17,6 +18,12 @@ interface LibraryClientProps {
 export default function LibraryClient({ initialBooks, initialFilter = 'ALL' }: LibraryClientProps) {
   const router = useRouter()
   const [showUpload, setShowUpload] = useState(initialBooks.length === 0)
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const filtered = useMemo(() =>
+    initialBooks.filter(b =>
+      b.title.includes(searchQuery) || (b.author ?? '').includes(searchQuery)
+    ), [initialBooks, searchQuery])
 
   const handleFilterChange = useCallback((status: BookStatus | 'ALL') => {
     if (status === 'ALL') {
@@ -56,6 +63,7 @@ export default function LibraryClient({ initialBooks, initialFilter = 'ALL' }: L
   return (
     <div className="space-y-4">
       <FilterPills active={initialFilter} onChange={handleFilterChange} />
+      <SearchBar value={searchQuery} onChange={setSearchQuery} />
       <div className="flex justify-end">
         <button
           type="button"
@@ -74,7 +82,7 @@ export default function LibraryClient({ initialBooks, initialFilter = 'ALL' }: L
           + 上传小说
         </button>
       </div>
-      <BookGrid books={initialBooks} />
+      <BookGrid books={filtered} />
     </div>
   )
 }
