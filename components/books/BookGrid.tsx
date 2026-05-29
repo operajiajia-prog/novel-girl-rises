@@ -1,5 +1,6 @@
 import BookCard from './BookCard'
 import BookCardSkeleton from './BookCardSkeleton'
+import EmptyState from '@/components/ui/EmptyState'
 import type { BookStatus } from '@prisma/client'
 
 type Book = {
@@ -29,6 +30,16 @@ export default function BookGrid({
   onStatusChange,
   onDelete,
 }: BookGridProps) {
+  if (!loading && books.length === 0) {
+    return (
+      <EmptyState
+        icon="📖"
+        title="暂无书籍"
+        description="换个筛选条件，或者上传一本新小说吧"
+      />
+    )
+  }
+
   return (
     <div
       style={{

@@ -63,6 +63,15 @@ export default function BookContextMenu({
     }
   }, [])
 
+  useEffect(() => {
+    if (!open) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeMenu()
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [open, closeMenu])
+
   const handleStatusChange = useCallback(
     async (status: BookStatus) => {
       closeMenu()

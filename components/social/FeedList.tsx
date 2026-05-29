@@ -1,4 +1,5 @@
 import ActivityItem, { type ActivityItemProps } from './ActivityItem'
+import EmptyState from '@/components/ui/EmptyState'
 
 interface FeedListProps {
   items: ActivityItemProps['activity'][]
@@ -8,16 +9,7 @@ interface FeedListProps {
 export default function FeedList({ items, emptyMessage = '去添加好友吧' }: FeedListProps) {
   if (items.length === 0) {
     return (
-      <p
-        style={{
-          textAlign: 'center',
-          padding: '32px 0',
-          fontSize: '14px',
-          color: 'var(--text-muted)',
-        }}
-      >
-        {emptyMessage}
-      </p>
+      <EmptyState icon="👥" title="暂无动态" description="添加好友，一起记录阅读旅程" />
     )
   }
 

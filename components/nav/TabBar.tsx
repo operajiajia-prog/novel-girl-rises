@@ -96,7 +96,7 @@ export default function TabBar() {
               className="text-xs"
               style={{
                 fontWeight: active ? 600 : 400,
-                fontSize: '10px',
+                fontSize: '11px',
                 letterSpacing: '0.02em',
               }}
             >
