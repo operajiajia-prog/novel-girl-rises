@@ -48,5 +48,9 @@ export async function POST(request: Request) {
     },
   })
 
+  await db.activityFeed.create({
+    data: { userId: session.user.id, actionType: 'BOOK_ADDED', bookId: book.id },
+  })
+
   return NextResponse.json({ book }, { status: 201 })
 }

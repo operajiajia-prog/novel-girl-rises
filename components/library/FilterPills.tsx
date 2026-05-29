@@ -21,7 +21,6 @@ export default function FilterPills({ active, onChange }: FilterPillsProps) {
       style={{
         display: 'flex',
         overflowX: 'auto',
-        scrollbarWidth: 'none',
         paddingLeft: '16px',
         paddingRight: '16px',
         gap: '8px',

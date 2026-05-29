@@ -31,6 +31,14 @@ export default function BookCard({ book }: BookCardProps) {
         transition: 'transform 150ms ease-out',
       }}
       onMouseDown={(e) => {
+        // Save card position for reader expand animation
+        const rect = (e.currentTarget as HTMLAnchorElement).getBoundingClientRect()
+        sessionStorage.setItem('reader-origin', JSON.stringify({
+          top: rect.top,
+          left: rect.left,
+          width: rect.width,
+          height: rect.height,
+        }))
         ;(e.currentTarget as HTMLAnchorElement).style.transform = 'scale(0.97)'
       }}
       onMouseUp={(e) => {

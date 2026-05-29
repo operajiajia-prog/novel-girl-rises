@@ -41,3 +41,14 @@ export function buildKey(userId: string, filename: string): string {
   const sanitized = filename.replace(/[^a-zA-Z0-9.\-_一-龥]/g, '_')
   return `books/${userId}/${Date.now()}_${sanitized}`
 }
+
+export async function downloadFile(key: string): Promise<Buffer> {
+  const command = new GetObjectCommand({ Bucket: BUCKET, Key: key })
+  const response = await client.send(command)
+  if (!response.Body) throw new Error(`No body returned for key: ${key}`)
+  const chunks: Uint8Array[] = []
+  for await (const chunk of response.Body as AsyncIterable<Uint8Array>) {
+    chunks.push(chunk)
+  }
+  return Buffer.concat(chunks)
+}
