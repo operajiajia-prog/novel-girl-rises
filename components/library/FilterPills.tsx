@@ -1,6 +1,6 @@
 'use client'
 
-import type { BookStatus } from '@prisma/client'
+import type { BookStatus } from '@/types'
 
 interface FilterPillsProps {
   active: BookStatus | 'ALL'
@@ -17,6 +17,7 @@ const OPTIONS: { value: BookStatus | 'ALL'; label: string }[] = [
 export default function FilterPills({ active, onChange }: FilterPillsProps) {
   return (
     <div
+      className="scrollbar-none"
       style={{
         display: 'flex',
         overflowX: 'auto',
@@ -25,10 +26,7 @@ export default function FilterPills({ active, onChange }: FilterPillsProps) {
         paddingRight: '16px',
         gap: '8px',
       }}
-      // eslint-disable-next-line react/no-unknown-property
-      {...{ 'data-hide-scrollbar': true }}
     >
-      <style>{`[data-hide-scrollbar]::-webkit-scrollbar { display: none; }`}</style>
       {OPTIONS.map((option) => {
         const isActive = option.value === active
         return (

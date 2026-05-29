@@ -16,9 +16,7 @@ describe('FilterPills', () => {
     render(<FilterPills active="READING" onChange={vi.fn()} />)
     const readingPill = screen.getByText('在读')
     const allPill = screen.getByText('全部')
-    // Active pill has accent background
     expect(readingPill.closest('button')).toHaveStyle({ background: 'var(--accent-500)' })
-    // Inactive pill has elevated background
     expect(allPill.closest('button')).toHaveStyle({ background: 'var(--bg-elevated)' })
   })
 

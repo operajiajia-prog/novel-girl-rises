@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import type { Book, BookStatus } from '@prisma/client'
+import type { Book, BookStatus } from '@/types'
 import BookGrid from './BookGrid'
 import UploadZone from './UploadZone'
 import FilterPills from '@/components/library/FilterPills'

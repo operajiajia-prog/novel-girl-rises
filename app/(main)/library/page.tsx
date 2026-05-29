@@ -13,9 +13,11 @@ export default async function LibraryPage({
   if (!session?.user?.id) redirect('/login')
 
   const { status } = await searchParams
+  const VALID_STATUSES: BookStatus[] = ['READING', 'WANT', 'FINISHED']
+  const activeFilter = VALID_STATUSES.includes(status as BookStatus) ? (status as BookStatus) : undefined
   const where = {
     userId: session.user.id,
-    ...(status && status !== 'ALL' ? { status: status as BookStatus } : {}),
+    ...(activeFilter ? { status: activeFilter } : {}),
   }
 
   const books = await db.book.findMany({
@@ -54,7 +56,7 @@ export default async function LibraryPage({
 
       <LibraryClient
         initialBooks={books}
-        initialFilter={(status as BookStatus | 'ALL' | undefined) ?? 'ALL'}
+        initialFilter={activeFilter ?? 'ALL'}
       />
     </div>
   )
