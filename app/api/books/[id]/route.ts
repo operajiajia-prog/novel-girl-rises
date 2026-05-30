@@ -67,6 +67,17 @@ export async function PATCH(
       data: { status: status as BookStatus },
     })
 
+    // Fire-and-forget: create activity feed entry for social sync
+    if (status === 'READING') {
+      db.activityFeed.create({
+        data: { userId: session.user.id, actionType: 'READING_STARTED', bookId: id },
+      }).catch(() => {})
+    } else if (status === 'FINISHED') {
+      db.activityFeed.create({
+        data: { userId: session.user.id, actionType: 'BOOK_FINISHED', bookId: id },
+      }).catch(() => {})
+    }
+
     return NextResponse.json(updated)
   } catch {
     return NextResponse.json({ error: '服务器错误' }, { status: 500 })

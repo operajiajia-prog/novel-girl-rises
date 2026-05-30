@@ -9,6 +9,9 @@ vi.mock('@/lib/db', () => ({
       update: vi.fn(),
       delete: vi.fn(),
     },
+    activityFeed: {
+      create: vi.fn(),
+    },
   },
 }))
 vi.mock('@/lib/r2', () => ({
@@ -31,6 +34,7 @@ const mockFindUnique = vi.mocked(db.book.findUnique)
 const mockUpdate = vi.mocked(db.book.update)
 const mockDelete = vi.mocked(db.book.delete)
 const mockDeleteFile = vi.mocked(deleteFile)
+const mockCreateActivity = vi.mocked(db.activityFeed.create)
 
 function makePatchRequest(bookId = 'book1', body: Record<string, unknown> = { status: 'READING' }) {
   return new Request(`http://localhost/api/books/${bookId}`, {
@@ -56,7 +60,13 @@ const mockBook = {
 }
 
 describe('PATCH /api/books/[id]', () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(() => {
+    vi.clearAllMocks()
+    // activityFeed.create is fire-and-forget; provide a default resolved value
+    // so the returned promise has a .catch() method even when the test doesn't
+    // explicitly mock it
+    mockCreateActivity.mockResolvedValue({} as any)
+  })
 
   it('returns 401 when not authenticated', async () => {
     mockAuth.mockResolvedValueOnce(null as unknown as AuthSession)
@@ -127,5 +137,61 @@ describe('DELETE /api/books/[id]', () => {
     mockDelete.mockResolvedValueOnce(mockBook as unknown as Book)
     await DELETE(makeDeleteRequest(), { params: Promise.resolve({ id: 'book1' }) })
     expect(mockDeleteFile).toHaveBeenCalledWith('books/user1/123_test.txt')
+  })
+})
+
+describe('activity feed on status change', () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  it('creates READING_STARTED activity when status changes to READING', async () => {
+    mockAuth.mockResolvedValueOnce({ user: { id: 'u1' } } as unknown as AuthSession)
+    mockFindUnique.mockResolvedValueOnce({ id: 'b1', userId: 'u1', status: 'WANT' } as unknown as Book)
+    mockUpdate.mockResolvedValueOnce({ id: 'b1', status: 'READING' } as unknown as Book)
+    mockCreateActivity.mockResolvedValueOnce({} as any)
+
+    const res = await PATCH(makePatchRequest('b1', { status: 'READING' }), { params: Promise.resolve({ id: 'b1' }) })
+    expect(res.status).toBe(200)
+    // Give the fire-and-forget a tick to run
+    await new Promise(resolve => setTimeout(resolve, 0))
+    expect(mockCreateActivity).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ actionType: 'READING_STARTED' }) })
+    )
+  })
+
+  it('creates BOOK_FINISHED activity when status changes to FINISHED', async () => {
+    mockAuth.mockResolvedValueOnce({ user: { id: 'u1' } } as unknown as AuthSession)
+    mockFindUnique.mockResolvedValueOnce({ id: 'b1', userId: 'u1', status: 'READING' } as unknown as Book)
+    mockUpdate.mockResolvedValueOnce({ id: 'b1', status: 'FINISHED' } as unknown as Book)
+    mockCreateActivity.mockResolvedValueOnce({} as any)
+
+    const res = await PATCH(makePatchRequest('b1', { status: 'FINISHED' }), { params: Promise.resolve({ id: 'b1' }) })
+    expect(res.status).toBe(200)
+    await new Promise(resolve => setTimeout(resolve, 0))
+    expect(mockCreateActivity).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ actionType: 'BOOK_FINISHED' }) })
+    )
+  })
+
+  it('does not create activity when status changes to WANT', async () => {
+    mockAuth.mockResolvedValueOnce({ user: { id: 'u1' } } as unknown as AuthSession)
+    mockFindUnique.mockResolvedValueOnce({ id: 'b1', userId: 'u1', status: 'READING' } as unknown as Book)
+    mockUpdate.mockResolvedValueOnce({ id: 'b1', status: 'WANT' } as unknown as Book)
+
+    const res = await PATCH(makePatchRequest('b1', { status: 'WANT' }), { params: Promise.resolve({ id: 'b1' }) })
+    expect(res.status).toBe(200)
+    await new Promise(resolve => setTimeout(resolve, 0))
+    expect(mockCreateActivity).not.toHaveBeenCalled()
+  })
+
+  it('activity failure does not affect PATCH response', async () => {
+    mockAuth.mockResolvedValueOnce({ user: { id: 'u1' } } as unknown as AuthSession)
+    mockFindUnique.mockResolvedValueOnce({ id: 'b1', userId: 'u1', status: 'WANT' } as unknown as Book)
+    mockUpdate.mockResolvedValueOnce({ id: 'b1', status: 'READING' } as unknown as Book)
+    mockCreateActivity.mockRejectedValueOnce(new Error('DB error'))
+
+    const res = await PATCH(makePatchRequest('b1', { status: 'READING' }), { params: Promise.resolve({ id: 'b1' }) })
+    expect(res.status).toBe(200)
+    // Allow the rejected promise to settle without crashing
+    await new Promise(resolve => setTimeout(resolve, 0))
   })
 })
