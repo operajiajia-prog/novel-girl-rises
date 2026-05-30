@@ -11,27 +11,25 @@ vi.mock('next/navigation', () => ({
 const mockFetch = vi.fn()
 global.fetch = mockFetch
 
-const defaultBook = { id: 'book-1', status: 'READING' as BookStatus, isArchived: false }
+const defaultBook = { id: 'book-1', status: 'READING' as BookStatus }
 
 function renderMenu(
   book = defaultBook,
-  overrides: { onStatusChange?: any; onDelete?: any; onArchiveChange?: any } = {}
+  overrides: { onStatusChange?: any; onDelete?: any } = {}
 ) {
   const onStatusChange = overrides.onStatusChange ?? vi.fn()
   const onDelete = overrides.onDelete ?? vi.fn()
-  const onArchiveChange = overrides.onArchiveChange ?? vi.fn()
 
   const result = render(
     <BookContextMenu
       book={book}
       onStatusChange={onStatusChange}
       onDelete={onDelete}
-      onArchiveChange={onArchiveChange}
     >
       <div data-testid="trigger">child content</div>
     </BookContextMenu>
   )
-  return { ...result, onStatusChange, onDelete, onArchiveChange }
+  return { ...result, onStatusChange, onDelete }
 }
 
 describe('BookContextMenu', () => {
@@ -71,8 +69,8 @@ describe('BookContextMenu', () => {
     renderMenu()
     fireEvent.contextMenu(screen.getByTestId('trigger'))
     const menuItems = screen.getAllByRole('menuitem')
-    // 2 status items + archive + delete = 4
-    expect(menuItems).toHaveLength(4)
+    // 2 status items + delete = 3
+    expect(menuItems).toHaveLength(3)
   })
 
   it('clicking a status item calls fetch PATCH and onStatusChange', async () => {
@@ -128,20 +126,6 @@ describe('BookContextMenu', () => {
     expect(screen.getByRole('menu')).toBeInTheDocument()
     fireEvent.click(screen.getByLabelText('关闭菜单'))
     expect(screen.queryByRole('menu')).toBeNull()
-  })
-
-  it('shows "归档" when book is not archived', () => {
-    renderMenu({ ...defaultBook, isArchived: false })
-    fireEvent.contextMenu(screen.getByTestId('trigger'))
-    expect(screen.getByText('归档')).toBeInTheDocument()
-    expect(screen.queryByText('取消归档')).toBeNull()
-  })
-
-  it('shows "取消归档" when book is archived', () => {
-    renderMenu({ ...defaultBook, isArchived: true })
-    fireEvent.contextMenu(screen.getByTestId('trigger'))
-    expect(screen.getByText('取消归档')).toBeInTheDocument()
-    expect(screen.queryByText('归档')).toBeNull()
   })
 
   it('menu DOM is absent when menu is closed', () => {
