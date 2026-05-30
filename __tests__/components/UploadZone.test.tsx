@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 import UploadZone from '@/components/books/UploadZone'
@@ -55,6 +55,32 @@ describe('UploadZone', () => {
 
     await waitFor(() => {
       expect(screen.getByText('仅支持 .txt 文件')).toBeInTheDocument()
+    })
+  })
+
+  it('shows 正在上传… during upload (loading state)', async () => {
+    vi.mocked(fetch).mockReturnValueOnce(new Promise(() => {}) as any)
+
+    render(<UploadZone onSuccess={vi.fn()} />)
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement
+    const file = new File(['content'], 'book.txt', { type: 'text/plain' })
+    await userEvent.upload(input, file)
+
+    await waitFor(() => {
+      expect(screen.getByText(/正在上传/i)).toBeInTheDocument()
+    })
+  })
+
+  it('shows network error message when fetch rejects', async () => {
+    vi.mocked(fetch).mockRejectedValueOnce(new Error('Network'))
+
+    render(<UploadZone onSuccess={vi.fn()} />)
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement
+    const file = new File(['content'], 'book.txt', { type: 'text/plain' })
+    await userEvent.upload(input, file)
+
+    await waitFor(() => {
+      expect(screen.getByText(/上传失败/i)).toBeInTheDocument()
     })
   })
 })

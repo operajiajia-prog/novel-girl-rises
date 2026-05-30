@@ -30,4 +30,13 @@ describe('SearchBar', () => {
     await user.click(screen.getByRole('button', { name: /clear/i }))
     expect(onChange).toHaveBeenCalledWith('')
   })
+
+  it('does not show clear button when value is empty', () => {
+    render(<SearchBar value="" onChange={vi.fn()} />)
+    expect(screen.queryByRole('button', { name: /clear/i })).not.toBeInTheDocument()
+  })
+
+  it('renders without crashing with empty string value', () => {
+    expect(() => render(<SearchBar value="" onChange={() => {}} />)).not.toThrow()
+  })
 })

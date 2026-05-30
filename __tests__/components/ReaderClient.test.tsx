@@ -96,4 +96,21 @@ describe('ReaderClient', () => {
     render(<ReaderClient book={{ ...mockBook, chapterIndex: 2 }} chapters={mockChapters} />)
     expect(screen.getByText('这是第三章的正文内容，最为精彩。')).toBeInTheDocument()
   })
+
+  it('renders without crashing when fetch rejects (graceful degradation)', async () => {
+    vi.mocked(global.fetch).mockRejectedValue(new Error('Network'))
+    expect(() =>
+      render(<ReaderClient book={mockBook} chapters={mockChapters} />)
+    ).not.toThrow()
+    await waitFor(() => {
+      expect(screen.getByText('这是第一章的正文内容，非常精彩。')).toBeInTheDocument()
+    })
+  })
+
+  it('renders single-chapter book without crashing', () => {
+    const single = [{ index: 0, title: '唯一章节', content: '只有一章。' }]
+    expect(() =>
+      render(<ReaderClient book={{ ...mockBook, chapterCount: 1 }} chapters={single} />)
+    ).not.toThrow()
+  })
 })

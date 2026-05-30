@@ -59,4 +59,49 @@ describe('RegisterForm', () => {
       expect(screen.getByText('邮箱已被注册')).toBeInTheDocument()
     })
   })
+
+  it('shows 注册中… while submitting (loading state)', async () => {
+    vi.mocked(fetch).mockReturnValueOnce(new Promise(() => {}) as any)
+
+    render(<RegisterForm />)
+    await userEvent.type(screen.getByLabelText(/邮箱/i), 'a@b.com')
+    await userEvent.type(screen.getByLabelText(/用户名/i), 'testuser')
+    await userEvent.type(screen.getByLabelText(/密码/i), 'password123')
+    await userEvent.click(screen.getByRole('button'))
+
+    await waitFor(() => {
+      expect(screen.getByText('注册中…')).toBeInTheDocument()
+    })
+    expect(screen.getByText('注册中…').closest('button')).toBeDisabled()
+  })
+
+  it('shows fallback error when server response has no error field', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      json: async () => ({}),
+    } as Response)
+
+    render(<RegisterForm />)
+    await userEvent.type(screen.getByLabelText(/邮箱/i), 'a@b.com')
+    await userEvent.type(screen.getByLabelText(/用户名/i), 'testuser')
+    await userEvent.type(screen.getByLabelText(/密码/i), 'password123')
+    await userEvent.click(screen.getByRole('button'))
+
+    await waitFor(() => {
+      expect(screen.getByText(/注册失败/i)).toBeInTheDocument()
+    })
+  })
+
+  it('shows short username validation error', async () => {
+    render(<RegisterForm />)
+    await userEvent.type(screen.getByLabelText(/邮箱/i), 'a@b.com')
+    await userEvent.type(screen.getByLabelText(/用户名/i), 'x')
+    await userEvent.type(screen.getByLabelText(/密码/i), 'password123')
+    await userEvent.click(screen.getByRole('button'))
+
+    await waitFor(() => {
+      expect(screen.getByText(/用户名至少/i)).toBeInTheDocument()
+    })
+  })
 })

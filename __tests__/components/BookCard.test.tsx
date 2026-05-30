@@ -47,4 +47,34 @@ describe('BookCard', () => {
     const link = screen.getByRole('link')
     expect(link.getAttribute('href')).toContain('b1')
   })
+
+  it('renders without crashing when optional props are null', () => {
+    expect(() =>
+      render(
+        <BookCard
+          book={{
+            id: 'b2',
+            title: '无封面书',
+            status: 'WANT',
+            author: null,
+            coverUrl: null,
+            genre: null,
+            chapterIndex: null,
+            chapterCount: null,
+            updatedAt: null,
+          }}
+        />
+      )
+    ).not.toThrow()
+  })
+
+  it('shows first character of title as fallback cover', () => {
+    render(<BookCard book={{ ...mockBook, coverUrl: null }} />)
+    expect(screen.getByText('斗')).toBeInTheDocument()
+  })
+
+  it('does not show genre badge when genre is null', () => {
+    render(<BookCard book={{ ...mockBook, genre: null }} />)
+    expect(screen.queryByText('玄幻')).not.toBeInTheDocument()
+  })
 })

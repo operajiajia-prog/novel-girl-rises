@@ -33,4 +33,24 @@ describe('FilterPills', () => {
     const allPill = screen.getByText('全部')
     expect(allPill.closest('button')).toHaveStyle({ background: 'var(--accent-500)' })
   })
+
+  it('calls onChange with FINISHED when 已读 clicked', async () => {
+    const user = userEvent.setup()
+    const onChange = vi.fn()
+    render(<FilterPills active="ALL" onChange={onChange} />)
+    await user.click(screen.getByText('已读'))
+    expect(onChange).toHaveBeenCalledWith('FINISHED')
+  })
+
+  it('calls onChange with WANT when 想读 clicked', async () => {
+    const user = userEvent.setup()
+    const onChange = vi.fn()
+    render(<FilterPills active="READING" onChange={onChange} />)
+    await user.click(screen.getByText('想读'))
+    expect(onChange).toHaveBeenCalledWith('WANT')
+  })
+
+  it('renders without crashing when onChange is a no-op', () => {
+    expect(() => render(<FilterPills active="ALL" onChange={() => {}} />)).not.toThrow()
+  })
 })

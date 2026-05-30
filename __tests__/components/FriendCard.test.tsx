@@ -2,6 +2,10 @@ import { render, screen } from '@testing-library/react'
 import { vi } from 'vitest'
 import FriendCard from '@/components/social/FriendCard'
 
+vi.mock('next/link', () => ({
+  default: ({ children, href }: any) => <a href={href}>{children}</a>,
+}))
+
 describe('FriendCard', () => {
   const baseFriend = { id: 'u1', username: 'alice', avatarUrl: null }
 
@@ -31,5 +35,20 @@ describe('FriendCard', () => {
   it('shows 暂无在读 when no book', () => {
     render(<FriendCard friend={baseFriend} />)
     expect(screen.getByText('暂无在读')).toBeInTheDocument()
+  })
+
+  it('shows 暂无在读 when readingBook is null', () => {
+    render(<FriendCard friend={baseFriend} readingBook={null} />)
+    expect(screen.getByText('暂无在读')).toBeInTheDocument()
+  })
+
+  it('links to friend profile page', () => {
+    render(<FriendCard friend={baseFriend} />)
+    const link = screen.getByRole('link')
+    expect(link.getAttribute('href')).toContain('u1')
+  })
+
+  it('renders without crashing with minimal props', () => {
+    expect(() => render(<FriendCard friend={baseFriend} />)).not.toThrow()
   })
 })

@@ -72,4 +72,47 @@ describe('ActivityItem', () => {
     )
     expect(screen.getByText('alice')).toBeInTheDocument()
   })
+
+  it('renders avatar initial (uppercase) when avatarUrl is null', () => {
+    render(
+      <ActivityItem
+        activity={{
+          ...baseActivity,
+          actionType: 'BOOKLIST_UPDATED',
+          book: null,
+        }}
+      />
+    )
+    expect(screen.getByText('A')).toBeInTheDocument()
+  })
+
+  it('renders avatar image when avatarUrl is provided', () => {
+    render(
+      <ActivityItem
+        activity={{
+          ...baseActivity,
+          user: { username: 'alice', avatarUrl: 'https://example.com/avatar.png' },
+          actionType: 'BOOKLIST_UPDATED',
+          book: null,
+        }}
+      />
+    )
+    const img = screen.getByRole('img')
+    expect(img).toBeInTheDocument()
+    expect(img.getAttribute('src')).toBe('https://example.com/avatar.png')
+  })
+
+  it('renders without crashing when book is null for BOOK_ADDED', () => {
+    expect(() =>
+      render(
+        <ActivityItem
+          activity={{
+            ...baseActivity,
+            actionType: 'BOOK_ADDED',
+            book: null,
+          }}
+        />
+      )
+    ).not.toThrow()
+  })
 })

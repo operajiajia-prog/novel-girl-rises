@@ -45,4 +45,22 @@ describe('SettingsSheet', () => {
     fireEvent.click(screen.getByTitle('米黄'))
     expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ bgColor: '#F5E6C8' }))
   })
+
+  it('renders without crashing when open transitions from false to true', () => {
+    const { rerender } = render(
+      <SettingsSheet open={false} onClose={vi.fn()} onChange={vi.fn()} settings={defaultSettings} />
+    )
+    expect(screen.queryByText('字号')).not.toBeInTheDocument()
+    rerender(
+      <SettingsSheet open={true} onClose={vi.fn()} onChange={vi.fn()} settings={defaultSettings} />
+    )
+    expect(screen.getByText('字号')).toBeInTheDocument()
+  })
+
+  it('highlights currently active font size button', () => {
+    const settings: ReaderSettings = { ...defaultSettings, fontSize: 14 }
+    render(<SettingsSheet open={true} onClose={vi.fn()} onChange={vi.fn()} settings={settings} />)
+    const btn14 = screen.getByText('14').closest('button')
+    expect(btn14).toHaveStyle({ background: 'var(--accent-100)' })
+  })
 })

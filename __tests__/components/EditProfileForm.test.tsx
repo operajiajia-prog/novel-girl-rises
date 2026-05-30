@@ -48,6 +48,62 @@ describe('EditProfileForm', () => {
     })
   })
 
+  it('shows 保存中… while submitting (loading state)', async () => {
+    global.fetch = vi.fn().mockReturnValueOnce(new Promise(() => {}))
+
+    render(
+      <EditProfileForm
+        initialUsername="alice"
+        initialBio="Bio"
+      />
+    )
+
+    await userEvent.click(screen.getByRole('button', { name: /保存/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText('保存中…')).toBeInTheDocument()
+    })
+    expect(screen.getByText('保存中…').closest('button')).toBeDisabled()
+  })
+
+  it('shows network error message on fetch rejection', async () => {
+    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network'))
+
+    render(
+      <EditProfileForm
+        initialUsername="alice"
+        initialBio="Bio"
+      />
+    )
+
+    await userEvent.click(screen.getByRole('button', { name: /保存/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText(/网络错误/i)).toBeInTheDocument()
+    })
+  })
+
+  it('shows 用户名已被占用 on 409 response', async () => {
+    global.fetch = vi.fn().mockResolvedValueOnce({
+      ok: false,
+      status: 409,
+      json: async () => ({}),
+    } as Response)
+
+    render(
+      <EditProfileForm
+        initialUsername="alice"
+        initialBio="Bio"
+      />
+    )
+
+    await userEvent.click(screen.getByRole('button', { name: /保存/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText('用户名已被占用')).toBeInTheDocument()
+    })
+  })
+
   it('calls onSave after successful submit', async () => {
     const onSave = vi.fn()
 

@@ -59,4 +59,18 @@ describe('LoginForm', () => {
       expect(screen.getByText(/邮箱或密码错误/i)).toBeInTheDocument()
     })
   })
+
+  it('shows 登录中… while submitting (loading state)', async () => {
+    vi.mocked(signIn).mockReturnValueOnce(new Promise(() => {}) as never)
+
+    render(<LoginForm />)
+    await userEvent.type(screen.getByLabelText(/邮箱/i), 'a@b.com')
+    await userEvent.type(screen.getByLabelText(/密码/i), 'password123')
+    await userEvent.click(screen.getByRole('button', { name: /登录/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText('登录中…')).toBeInTheDocument()
+    })
+    expect(screen.getByText('登录中…').closest('button')).toBeDisabled()
+  })
 })
