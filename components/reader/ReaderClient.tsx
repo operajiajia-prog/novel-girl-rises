@@ -94,7 +94,7 @@ export default function ReaderClient({ book, chapters }: Props) {
 
   // Scroll to top when chapter changes
   useEffect(() => {
-    if (containerRef.current) {
+    if (containerRef.current && typeof containerRef.current.scrollTo === 'function') {
       containerRef.current.scrollTo({ top: 0, behavior: 'instant' })
     }
   }, [currentIndex])
