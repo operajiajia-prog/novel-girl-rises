@@ -56,6 +56,7 @@ export default async function ProfilePage() {
 
           <div style={{ flex: 1, minWidth: 0 }}>
             <p
+              data-testid="profile-username"
               style={{
                 margin: 0,
                 fontSize: '17px',

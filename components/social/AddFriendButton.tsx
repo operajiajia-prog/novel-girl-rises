@@ -9,6 +9,7 @@ export default function AddFriendButton() {
   return (
     <>
       <button
+        data-testid="add-friend-btn"
         type="button"
         onClick={() => setOpen(true)}
         style={{
