@@ -156,7 +156,7 @@ export default function ReviewModal({ open, onClose, bookId, bookTitle, initialT
               borderRadius: '10px',
               border: 'none',
               background: overLimit || saving ? 'var(--bg-elevated)' : 'var(--accent-500)',
-              color: overLimit || saving ? 'var(--text-disabled)' : 'white',
+              color: overLimit || saving ? 'var(--text-disabled)' : 'var(--text-on-accent, #ffffff)',
               cursor: overLimit || saving ? 'not-allowed' : 'pointer',
               fontSize: '14px',
               fontWeight: 600,
