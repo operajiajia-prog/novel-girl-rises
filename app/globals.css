@@ -49,34 +49,36 @@
 
 /* ─── Design Tokens ────────────────────────────────── */
 :root {
-  /* Background layers (warm-tinted black, hue 60) */
-  --bg-base:     oklch(0.13 0.005 60);
-  --bg-card:     oklch(0.17 0.005 60);
-  --bg-elevated: oklch(0.21 0.005 60);
+  /* Background layers — Claude warm off-white */
+  --bg-base:     oklch(0.975 0.006 60);  /* #f9f8f6 Claude主背景 */
+  --bg-card:     oklch(1.0   0.0   0);   /* #ffffff 卡片 */
+  --bg-elevated: oklch(0.955 0.007 60);  /* 稍深的悬浮面 */
 
   /* Borders */
-  --border-subtle:  rgba(255, 248, 235, 0.07);
-  --border-default: rgba(255, 248, 235, 0.13);
+  --border-subtle:  rgba(28, 22, 10, 0.07);
+  --border-default: rgba(28, 22, 10, 0.13);
 
   /* Accent — Amber-Orange (Claude-style) */
-  --accent-950: oklch(0.20 0.06 55);
-  --accent-600: oklch(0.62 0.18 55);
-  --accent-500: oklch(0.72 0.17 55);
-  --accent-400: oklch(0.80 0.14 55);
-  --accent-200: oklch(0.90 0.07 55);
-  --accent-100: oklch(0.94 0.04 55);
+  --accent-950: oklch(0.96 0.04  55);   /* 极浅 amber 背景 */
+  --accent-600: oklch(0.58 0.19  55);   /* hover */
+  --accent-500: oklch(0.68 0.19  55);   /* CTA */
+  --accent-400: oklch(0.55 0.18  55);   /* 链接/高亮（浅色背景要更深才看得清）*/
+  --accent-200: oklch(0.85 0.08  55);
+  --accent-100: oklch(0.93 0.04  55);
 
   /* Text */
-  --text-primary:   rgba(255, 248, 235, 0.92);
-  --text-secondary: rgba(255, 248, 235, 0.58);
-  --text-muted:     rgba(255, 248, 235, 0.36);
-  --text-disabled:  rgba(255, 248, 235, 0.22);
+  --text-primary:   rgba(28, 22, 10, 0.90);
+  --text-secondary: rgba(28, 22, 10, 0.55);
+  --text-muted:     rgba(28, 22, 10, 0.35);
+  --text-disabled:  rgba(28, 22, 10, 0.22);
   --text-accent:    var(--accent-400);
+  --text-on-accent: #ffffff;
 
   /* Semantic */
-  --color-success: #4ade80;
-  --color-warning: #facc15;
-  --color-danger:  #f87171;
+  --color-success: #16a34a;
+  --color-warning: #d97706;
+  --color-danger:  #dc2626;
+  --color-error:   #dc2626;
 }
 
 /* ─── Base Styles ──────────────────────────────────── */
@@ -98,14 +100,14 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Noise texture overlay for depth */
+  /* Subtle noise texture for light theme depth */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
     pointer-events: none;
     z-index: 9999;
-    opacity: 0.025;
+    opacity: 0.012;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
     background-size: 256px 256px;
   }
@@ -153,8 +155,8 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
+  border: 2px solid var(--border-default);
+  border-top-color: var(--accent-500);
   animation: spin 0.6s linear infinite;
 }
 
