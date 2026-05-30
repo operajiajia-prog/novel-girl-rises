@@ -84,3 +84,61 @@ describe('UploadZone', () => {
     })
   })
 })
+
+describe('duplicate handling', () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  it('shows duplicate warning when API returns 409', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: false,
+      status: 409,
+      json: async () => ({ error: 'DUPLICATE', existingId: 'book-abc', title: '斗破苍穹' }),
+    } as any)
+
+    render(<UploadZone onSuccess={vi.fn()} />)
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement
+    const file = new File(['content'], 'test.txt', { type: 'text/plain' })
+    await userEvent.upload(input, file)
+
+    await waitFor(() => {
+      expect(screen.getByText(/书库里已有《斗破苍穹》/)).toBeInTheDocument()
+    })
+    expect(screen.getByText('查看已有书籍')).toBeInTheDocument()
+    expect(screen.getByText('仍要上传副本')).toBeInTheDocument()
+  })
+
+  it('"仍要上传副本" retries with force=true', async () => {
+    // First call returns 409
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: false,
+      status: 409,
+      json: async () => ({ error: 'DUPLICATE', existingId: 'book-abc', title: '斗破苍穹' }),
+    } as any)
+    // Second call (force=true) returns success
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      status: 201,
+      json: async () => ({ book: { id: 'new-book', title: '斗破苍穹' } }),
+    } as any)
+
+    const onSuccess = vi.fn()
+    render(<UploadZone onSuccess={onSuccess} />)
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement
+    const file = new File(['content'], 'test.txt', { type: 'text/plain' })
+    await userEvent.upload(input, file)
+
+    await waitFor(() => {
+      expect(screen.getByText('仍要上传副本')).toBeInTheDocument()
+    })
+
+    await userEvent.click(screen.getByText('仍要上传副本'))
+
+    await waitFor(() => {
+      expect(onSuccess).toHaveBeenCalledWith(expect.objectContaining({ id: 'new-book' }))
+    })
+
+    // Confirm second fetch was called with force=true
+    const secondCall = vi.mocked(fetch).mock.calls[1]
+    expect(secondCall[0]).toContain('force=true')
+  })
+})

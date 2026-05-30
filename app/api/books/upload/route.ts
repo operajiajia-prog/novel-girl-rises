@@ -33,6 +33,24 @@ export async function POST(request: Request) {
 
     const parsed = parseTxtFile(buffer, file.name)
 
+    // Duplicate check
+    const titleToCheck = parsed.title
+    const url = new URL(request.url)
+    const force = url.searchParams.get('force') === 'true'
+
+    if (!force) {
+      const existing = await db.book.findFirst({
+        where: { userId: session.user.id, title: titleToCheck },
+        select: { id: true, title: true },
+      })
+      if (existing) {
+        return NextResponse.json(
+          { error: 'DUPLICATE', existingId: existing.id, title: titleToCheck },
+          { status: 409 }
+        )
+      }
+    }
+
     const key = buildKey(session.user.id, file.name)
     const fileUrl = await uploadFile(key, buffer, 'text/plain')
 
