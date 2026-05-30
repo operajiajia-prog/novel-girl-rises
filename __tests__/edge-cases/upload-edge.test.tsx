@@ -35,7 +35,7 @@ describe('UploadZone — edge cases', () => {
 
   beforeEach(() => {
     fetchMock = vi.fn()
-    global.fetch = fetchMock
+    global.fetch = fetchMock as unknown as typeof fetch
   })
 
   afterEach(() => {
