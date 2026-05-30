@@ -6,6 +6,7 @@ import SettingsSheet from './SettingsSheet'
 import type { ReaderSettings } from './SettingsSheet'
 import TocDrawer from './TocDrawer'
 import SearchOverlay from './SearchOverlay'
+import AnnotationPanel from './AnnotationPanel'
 
 interface Chapter { index: number; title: string; content: string }
 interface BookInfo {
@@ -45,6 +46,7 @@ export default function ReaderClient({ book, chapters }: Props) {
   const [showSettings, setShowSettings] = useState(false)
   const [showToc, setShowToc] = useState(false)
   const [showSearch, setShowSearch] = useState(false)
+  const [showAnnotations, setShowAnnotations] = useState(false)
   const [settings, setSettings] = useState<ReaderSettings>(DEFAULT_SETTINGS)
   const containerRef = useRef<HTMLDivElement>(null)
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -160,6 +162,14 @@ export default function ReaderClient({ book, chapters }: Props) {
               style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-primary)', fontSize: '15px', padding: '8px' }}
             >
               🔍
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowAnnotations(true)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-primary)', fontSize: '15px', padding: '8px' }}
+              aria-label="章节批注"
+            >
+              📝
             </button>
             <button
               type="button"
@@ -292,6 +302,16 @@ export default function ReaderClient({ book, chapters }: Props) {
         onClose={() => setShowSearch(false)}
         bookId={book.id}
         onJump={(idx) => { setCurrentIndex(idx); setShowSearch(false) }}
+      />
+
+      {/* Annotation panel */}
+      <AnnotationPanel
+        open={showAnnotations}
+        onClose={() => setShowAnnotations(false)}
+        bookId={book.id}
+        currentChapterIndex={currentIndex}
+        chapterTitles={chapters.map(c => c.title)}
+        onJump={(idx) => { setCurrentIndex(idx); setShowAnnotations(false) }}
       />
     </div>
   )

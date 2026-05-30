@@ -19,6 +19,7 @@ model User {
   booklist            Booklist?
   readingNotes        ReadingNote[]
   activities          ActivityFeed[]
+  annotations         Annotation[]
   sentFriendships     Friendship[]   @relation("requester")
   receivedFriendships Friendship[]   @relation("addressee")
 }
@@ -48,6 +49,7 @@ model Book {
   booklistEntries BooklistEntry[]
   readingNotes    ReadingNote[]
   activities      ActivityFeed[]
+  annotations     Annotation[]
 }
 
 enum BookStatus {
@@ -129,4 +131,21 @@ enum ActionType {
   READING_STARTED
   BOOK_FINISHED
   BOOKLIST_UPDATED
+  BOOK_RECOMMENDED
+}
+
+model Annotation {
+  id           String   @id @default(cuid())
+  userId       String
+  bookId       String
+  chapterIndex Int
+  content      String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@index([userId, bookId])
+  @@index([userId, bookId, chapterIndex])
 }
