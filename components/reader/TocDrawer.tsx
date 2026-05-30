@@ -89,7 +89,7 @@ export default function TocDrawer({ open, onClose, chapters, currentIndex, onJum
         </div>
 
         {/* Chapter list */}
-        <div style={{ flex: 1, overflowY: 'auto' }}>
+        <div data-testid="toc-chapter-list" style={{ flex: 1, overflowY: 'auto' }}>
           {chapters.map(chapter => {
             const isCurrent = chapter.index === currentIndex
             return (

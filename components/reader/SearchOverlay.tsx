@@ -180,6 +180,7 @@ export default function SearchOverlay({ open, onClose, bookId, onJump }: Props) 
           )}
         </div>
         <button
+          data-testid="search-close-btn"
           type="button"
           onClick={onClose}
           style={{
@@ -239,6 +240,7 @@ export default function SearchOverlay({ open, onClose, bookId, onJump }: Props) 
           results.map((result) => (
             <button
               key={result.chapterIndex}
+              data-testid="search-result"
               type="button"
               onClick={() => handleResultClick(result.chapterIndex)}
               style={{
