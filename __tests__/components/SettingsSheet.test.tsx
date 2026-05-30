@@ -64,3 +64,55 @@ describe('SettingsSheet', () => {
     expect(btn14).toHaveStyle({ background: 'var(--accent-100)' })
   })
 })
+
+describe('Enhanced settings — font, brightness, paragraph spacing', () => {
+  const baseSettings: ReaderSettings = {
+    fontSize: 17,
+    bgColor: '#F5E6C8',
+    lineHeight: 1.85,
+    fontFamily: 'system-ui, -apple-system, sans-serif',
+    brightness: 1.0,
+    paragraphSpacing: 0,
+  }
+
+  it('renders 4 font family buttons', () => {
+    render(<SettingsSheet open settings={baseSettings} onChange={vi.fn()} onClose={vi.fn()} />)
+    expect(screen.getByText('默认')).toBeInTheDocument()
+    expect(screen.getByText('宋体')).toBeInTheDocument()
+    expect(screen.getByText('楷体')).toBeInTheDocument()
+    expect(screen.getByText('黑体')).toBeInTheDocument()
+  })
+
+  it('clicking a font button calls onChange with correct fontFamily', () => {
+    const onChange = vi.fn()
+    render(<SettingsSheet open settings={baseSettings} onChange={onChange} onClose={vi.fn()} />)
+    fireEvent.click(screen.getByText('宋体'))
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({ fontFamily: '"SimSun", "STSong", Georgia, serif' })
+    )
+  })
+
+  it('renders brightness slider', () => {
+    render(<SettingsSheet open settings={baseSettings} onChange={vi.fn()} onClose={vi.fn()} />)
+    expect(screen.getByTestId('brightness-slider')).toBeInTheDocument()
+  })
+
+  it('brightness slider change calls onChange with brightness in 0-1 range', () => {
+    const onChange = vi.fn()
+    render(<SettingsSheet open settings={baseSettings} onChange={onChange} onClose={vi.fn()} />)
+    fireEvent.change(screen.getByTestId('brightness-slider'), { target: { value: '80' } })
+    expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ brightness: 0.8 }))
+  })
+
+  it('renders paragraph spacing slider', () => {
+    render(<SettingsSheet open settings={baseSettings} onChange={vi.fn()} onClose={vi.fn()} />)
+    expect(screen.getByTestId('paragraph-spacing-slider')).toBeInTheDocument()
+  })
+
+  it('paragraph spacing slider change calls onChange with spacing in em units', () => {
+    const onChange = vi.fn()
+    render(<SettingsSheet open settings={baseSettings} onChange={onChange} onClose={vi.fn()} />)
+    fireEvent.change(screen.getByTestId('paragraph-spacing-slider'), { target: { value: '10' } })
+    expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ paragraphSpacing: 1.0 }))
+  })
+})

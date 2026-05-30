@@ -17,7 +17,14 @@ interface Props {
 }
 
 const STORAGE_KEY = 'reader-settings'
-const DEFAULT_SETTINGS: ReaderSettings = { fontSize: 17, bgColor: '#F5E6C8', lineHeight: 1.85 }
+const DEFAULT_SETTINGS: ReaderSettings = {
+  fontSize: 17,
+  bgColor: '#F5E6C8',
+  lineHeight: 1.85,
+  fontFamily: 'system-ui, -apple-system, sans-serif',
+  brightness: 1.0,
+  paragraphSpacing: 0,
+}
 
 function loadSettings(): ReaderSettings {
   if (typeof window === 'undefined') return DEFAULT_SETTINGS
@@ -199,12 +206,14 @@ export default function ReaderClient({ book, chapters }: Props) {
             {chapter?.title}
           </h2>
           <p style={{
-            fontFamily: "-apple-system, 'PingFang SC', 'Hiragino Sans GB', sans-serif",
+            fontFamily: settings.fontFamily,
             fontSize: `${settings.fontSize}px`,
             lineHeight: settings.lineHeight,
             color: 'var(--text-primary)',
             whiteSpace: 'pre-wrap',
             margin: 0,
+            marginBottom: settings.paragraphSpacing > 0 ? `${settings.paragraphSpacing}em` : undefined,
+            filter: settings.brightness < 1.0 ? `brightness(${settings.brightness})` : undefined,
           }}>
             {chapter?.content}
           </p>

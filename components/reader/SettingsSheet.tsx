@@ -4,6 +4,9 @@ export interface ReaderSettings {
   fontSize: number
   bgColor: string
   lineHeight: number
+  fontFamily: string       // default: 'system-ui, -apple-system, sans-serif'
+  brightness: number       // range 0.7–1.0, default: 1.0
+  paragraphSpacing: number // range 0–2 (em units), default: 0
 }
 
 interface Props {
@@ -14,6 +17,12 @@ interface Props {
 }
 
 const FONT_SIZES = [14, 16, 18, 20, 22]
+const FONT_FAMILIES = [
+  { label: '默认', value: 'system-ui, -apple-system, sans-serif' },
+  { label: '宋体', value: '"SimSun", "STSong", Georgia, serif' },
+  { label: '楷体', value: '"KaiTi", "STKaiti", cursive' },
+  { label: '黑体', value: '"SimHei", "STHeiti", "Microsoft YaHei", sans-serif' },
+]
 const LINE_HEIGHTS = [
   { label: '紧', value: 1.6 },
   { label: '标准', value: 1.85 },
@@ -110,7 +119,7 @@ export default function SettingsSheet({ open, onClose, settings, onChange }: Pro
         </div>
 
         {/* 行距 */}
-        <div>
+        <div style={{ marginBottom: '20px' }}>
           <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginBottom: '10px' }}>行距</p>
           <div style={{ display: 'flex', gap: '8px' }}>
             {LINE_HEIGHTS.map(({ label, value }) => (
@@ -134,6 +143,73 @@ export default function SettingsSheet({ open, onClose, settings, onChange }: Pro
                 {label}
               </button>
             ))}
+          </div>
+        </div>
+
+        {/* 字体 */}
+        <div style={{ marginBottom: '20px' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginBottom: '10px' }}>字体</p>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            {FONT_FAMILIES.map(f => (
+              <button
+                key={f.value}
+                type="button"
+                onClick={() => onChange({ ...settings, fontFamily: f.value })}
+                style={{
+                  flex: 1,
+                  padding: '8px 0',
+                  borderRadius: '8px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '13px',
+                  background: settings.fontFamily === f.value ? 'var(--accent-100)' : 'var(--bg-elevated)',
+                  color: settings.fontFamily === f.value ? 'var(--accent-400)' : 'var(--text-secondary)',
+                  fontWeight: settings.fontFamily === f.value ? 600 : 400,
+                  fontFamily: f.value,
+                  transition: 'background 200ms, color 200ms',
+                }}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* 亮度 */}
+        <div style={{ marginBottom: '20px' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginBottom: '10px' }}>亮度</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>暗</span>
+            <input
+              data-testid="brightness-slider"
+              type="range"
+              min={70}
+              max={100}
+              step={5}
+              value={Math.round(settings.brightness * 100)}
+              onChange={e => onChange({ ...settings, brightness: Number(e.target.value) / 100 })}
+              style={{ flex: 1 }}
+            />
+            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>亮</span>
+          </div>
+        </div>
+
+        {/* 段落间距 */}
+        <div style={{ marginBottom: '20px' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginBottom: '10px' }}>段落间距</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>密</span>
+            <input
+              data-testid="paragraph-spacing-slider"
+              type="range"
+              min={0}
+              max={20}
+              step={2}
+              value={Math.round(settings.paragraphSpacing * 10)}
+              onChange={e => onChange({ ...settings, paragraphSpacing: Number(e.target.value) / 10 })}
+              style={{ flex: 1 }}
+            />
+            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>疏</span>
           </div>
         </div>
       </div>
