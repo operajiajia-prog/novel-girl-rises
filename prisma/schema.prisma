@@ -35,6 +35,7 @@ model Book {
   emotionTag    String?
   tags          String[]
   status        BookStatus @default(WANT)
+  isArchived    Boolean    @default(false)
   chapterIndex  Int        @default(0)
   charOffset    Int        @default(0)
   fileSizeBytes Int?

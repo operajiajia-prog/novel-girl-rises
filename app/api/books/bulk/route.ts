@@ -65,7 +65,7 @@ export async function DELETE(request: Request) {
     })
 
     // Clean up R2 files
-    await Promise.all(books.map(b => deleteFile(keyFromUrl(b.fileUrl))))
+    await Promise.allSettled(books.map(b => deleteFile(keyFromUrl(b.fileUrl))))
 
     await db.book.deleteMany({
       where: { id: { in: books.map(b => b.id) }, userId: session.user.id },
