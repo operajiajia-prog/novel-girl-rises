@@ -92,6 +92,13 @@ export default function ReaderClient({ book, chapters }: Props) {
     }
   }, [currentIndex, book.id])
 
+  // Scroll to top when chapter changes
+  useEffect(() => {
+    if (containerRef.current) {
+      containerRef.current.scrollTo({ top: 0, behavior: 'instant' })
+    }
+  }, [currentIndex])
+
   const handleSettingsChange = useCallback((s: ReaderSettings) => {
     setSettings(s)
     localStorage.setItem(STORAGE_KEY, JSON.stringify(s))
