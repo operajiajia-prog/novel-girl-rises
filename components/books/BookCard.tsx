@@ -122,6 +122,36 @@ export default function BookCard({ book, onStatusChange, onDelete }: BookCardPro
             {book.genre}
           </span>
         )}
+
+        {/* Synopsis overlay at bottom of cover */}
+        {book.synopsis && (
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              padding: '20px 8px 8px',
+              background: 'linear-gradient(to top, rgba(20,14,4,0.82) 60%, transparent)',
+              borderRadius: '0 0 12px 12px',
+            }}
+          >
+            <p
+              style={{
+                margin: 0,
+                fontSize: '11px',
+                color: 'rgba(255,248,235,0.85)',
+                lineHeight: '1.4',
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+              }}
+            >
+              {book.synopsis}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Title */}

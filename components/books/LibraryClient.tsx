@@ -11,7 +11,7 @@ import SearchBar from '@/components/library/SearchBar'
 import BulkActionBar from '@/components/library/BulkActionBar'
 
 type UploadedBook = { id: string; title: string }
-type LibraryBook = Pick<Book, 'id' | 'title' | 'author' | 'coverUrl' | 'genre' | 'status' | 'chapterIndex' | 'chapterCount' | 'updatedAt'>
+type LibraryBook = Pick<Book, 'id' | 'title' | 'author' | 'synopsis' | 'coverUrl' | 'genre' | 'status' | 'chapterIndex' | 'chapterCount' | 'updatedAt'>
 
 interface LibraryClientProps {
   initialBooks: LibraryBook[]

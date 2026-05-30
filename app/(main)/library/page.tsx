@@ -27,6 +27,7 @@ export default async function LibraryPage({
       id: true,
       title: true,
       author: true,
+      synopsis: true,
       coverUrl: true,
       genre: true,
       status: true,
