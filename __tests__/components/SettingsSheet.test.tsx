@@ -3,7 +3,14 @@ import { describe, it, expect, vi } from 'vitest'
 import SettingsSheet from '@/components/reader/SettingsSheet'
 import type { ReaderSettings } from '@/components/reader/SettingsSheet'
 
-const defaultSettings: ReaderSettings = { fontSize: 17, bgColor: '#000000', lineHeight: 1.85 }
+const defaultSettings: ReaderSettings = {
+  fontSize: 17,
+  bgColor: '#000000',
+  lineHeight: 1.85,
+  fontFamily: 'system-ui, -apple-system, sans-serif',
+  brightness: 1.0,
+  paragraphSpacing: 0,
+}
 
 describe('SettingsSheet', () => {
   it('renders font size, background, and line height sections when open', () => {

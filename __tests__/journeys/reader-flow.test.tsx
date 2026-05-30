@@ -42,7 +42,14 @@ const MOCK_BOOK = {
 }
 
 describe('SettingsSheet', () => {
-  const baseSettings = { fontSize: 17, bgColor: '#F5E6C8', lineHeight: 1.85 }
+  const baseSettings = {
+    fontSize: 17,
+    bgColor: '#F5E6C8',
+    lineHeight: 1.85,
+    fontFamily: 'system-ui, -apple-system, sans-serif',
+    brightness: 1.0,
+    paragraphSpacing: 0,
+  }
 
   it('does not render when closed', () => {
     const onChange = vi.fn()
