@@ -33,6 +33,13 @@ export default function RecommendModal({ open, onClose, bookId, bookTitle }: Pro
       .finally(() => setLoading(false))
   }, [open])
 
+  useEffect(() => {
+    if (!open) return
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [open, onClose])
+
   if (!open) return null
 
   const handleRecommend = async (friend: Friend) => {

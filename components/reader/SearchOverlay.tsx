@@ -74,9 +74,15 @@ export default function SearchOverlay({ open, onClose, bookId, onJump }: Props) 
 
   useEffect(() => {
     if (!open) return
-    // Focus input when overlay opens
     setTimeout(() => inputRef.current?.focus(), 50)
   }, [open])
+
+  useEffect(() => {
+    if (!open) return
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [open, onClose])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value

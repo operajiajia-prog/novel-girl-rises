@@ -46,6 +46,12 @@ export default function AddFriendModal({ onClose }: AddFriendModalProps) {
     }
   }, [query])
 
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [onClose])
+
   async function sendRequest(userId: string) {
     setRequestStates((prev) => ({ ...prev, [userId]: 'idle' }))
     try {

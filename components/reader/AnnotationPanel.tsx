@@ -54,6 +54,13 @@ export default function AnnotationPanel({
     }
   }, [open, fetchAnnotations])
 
+  useEffect(() => {
+    if (!open) return
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [open, onClose])
+
   const handleAdd = async () => {
     if (!addContent.trim() || addContent.length > 500) return
     setSaving(true)

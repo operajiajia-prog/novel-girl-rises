@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect } from 'react'
+
 export interface ReaderSettings {
   fontSize: number
   bgColor: string
@@ -37,6 +39,13 @@ const BG_COLORS = [
 ]
 
 export default function SettingsSheet({ open, onClose, settings, onChange }: Props) {
+  useEffect(() => {
+    if (!open) return
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [open, onClose])
+
   if (!open) return null
 
   return (
