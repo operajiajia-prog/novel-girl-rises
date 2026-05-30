@@ -11,15 +11,19 @@ model User {
   email        String   @unique
   passwordHash String
   username     String   @unique
-  avatarUrl    String?
-  bio          String?
-  createdAt    DateTime @default(now())
+  avatarUrl        String?
+  bio              String?
+  readerFontSize   Int?
+  readerBgColor    String?
+  readerLineHeight String?
+  createdAt        DateTime @default(now())
 
   books               Book[]
   booklist            Booklist?
   readingNotes        ReadingNote[]
   activities          ActivityFeed[]
   annotations         Annotation[]
+  bookmarks           Bookmark[]
   sentFriendships     Friendship[]   @relation("requester")
   receivedFriendships Friendship[]   @relation("addressee")
 }
@@ -32,6 +36,7 @@ model Book {
   fileUrl       String
   coverUrl      String?
   synopsis      String?
+  userNotes     String?
   genre         String?
   emotionTag    String?
   tags          String[]
@@ -50,6 +55,7 @@ model Book {
   readingNotes    ReadingNote[]
   activities      ActivityFeed[]
   annotations     Annotation[]
+  bookmarks       Bookmark[]
 }
 
 enum BookStatus {
@@ -110,6 +116,22 @@ model ReadingNote {
   book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
 
   @@unique([userId, bookId])
+}
+
+model Bookmark {
+  id           String   @id @default(cuid())
+  userId       String
+  bookId       String
+  chapterIndex Int
+  charOffset   Int      @default(0)
+  label        String?
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, bookId, chapterIndex, charOffset])
+  @@index([userId, bookId])
 }
 
 model ActivityFeed {

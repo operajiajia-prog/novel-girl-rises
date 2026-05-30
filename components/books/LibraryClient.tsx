@@ -39,8 +39,23 @@ export default function LibraryClient({ initialBooks, initialFilter = 'ALL' }: L
     }
   }, [router])
 
-  const handleUploadSuccess = useCallback((_book: UploadedBook) => {
+  const handleUploadSuccess = useCallback((book: UploadedBook) => {
     setShowUpload(false)
+    setBooks(prev => [
+      ...prev,
+      {
+        id: book.id,
+        title: book.title,
+        author: null,
+        synopsis: null,
+        coverUrl: null,
+        genre: null,
+        status: 'WANT' as BookStatus,
+        chapterIndex: 0,
+        chapterCount: null,
+        updatedAt: new Date(),
+      },
+    ])
     router.refresh()
   }, [router])
 
