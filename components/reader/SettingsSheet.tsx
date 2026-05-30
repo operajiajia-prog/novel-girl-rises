@@ -41,10 +41,11 @@ export default function SettingsSheet({ open, onClose, settings, onChange }: Pro
 
   return (
     <>
-      {/* Backdrop */}
+      {/* Backdrop — supports both click and touch */}
       <div
         data-testid="settings-backdrop"
         onClick={onClose}
+        onTouchEnd={(e) => { e.preventDefault(); onClose(); }}
         style={{
           position: 'fixed',
           inset: 0,
