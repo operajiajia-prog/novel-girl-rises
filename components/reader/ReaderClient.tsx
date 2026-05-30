@@ -196,7 +196,11 @@ export default function ReaderClient({ book, chapters }: Props) {
         onClick={() => setShowOverlay(v => !v)}
         style={{ minHeight: '100vh', padding: '24px 20px 48px', cursor: 'default' }}
       >
-        <div style={{ maxWidth: '680px', margin: '0 auto' }}>
+        <div style={{
+          maxWidth: '680px',
+          margin: '0 auto',
+          filter: settings.brightness < 1.0 ? `brightness(${settings.brightness})` : undefined,
+        }}>
           <h2 style={{
             fontFamily: "'Noto Serif SC', serif",
             fontSize: '16px', fontWeight: 700,
@@ -205,18 +209,22 @@ export default function ReaderClient({ book, chapters }: Props) {
           }}>
             {chapter?.title}
           </h2>
-          <p style={{
-            fontFamily: settings.fontFamily,
-            fontSize: `${settings.fontSize}px`,
-            lineHeight: settings.lineHeight,
-            color: 'var(--text-primary)',
-            whiteSpace: 'pre-wrap',
-            margin: 0,
-            marginBottom: settings.paragraphSpacing > 0 ? `${settings.paragraphSpacing}em` : undefined,
-            filter: settings.brightness < 1.0 ? `brightness(${settings.brightness})` : undefined,
-          }}>
-            {chapter?.content}
-          </p>
+          {chapter?.content.split(/\n\n+/).map((paragraph, i) => (
+            <p
+              key={i}
+              style={{
+                fontFamily: settings.fontFamily,
+                fontSize: `${settings.fontSize}px`,
+                lineHeight: settings.lineHeight,
+                color: 'var(--text-primary)',
+                whiteSpace: 'pre-wrap',
+                margin: 0,
+                marginBottom: settings.paragraphSpacing > 0 ? `${settings.paragraphSpacing}em` : '0',
+              }}
+            >
+              {paragraph}
+            </p>
+          ))}
         </div>
       </div>
 
