@@ -14,45 +14,50 @@ const EXT_MAP: Record<string, string> = {
 }
 
 export async function POST(request: Request) {
-  const session = await auth()
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: '未登录' }, { status: 401 })
+  try {
+    const session = await auth()
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: '未登录' }, { status: 401 })
+    }
+
+    const formData = await request.formData()
+    const file = formData.get('avatar') as File | null
+
+    if (!file) {
+      return NextResponse.json({ error: '未提供文件' }, { status: 400 })
+    }
+
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      return NextResponse.json({ error: '不支持的图片格式' }, { status: 400 })
+    }
+
+    if (file.size > MAX_SIZE) {
+      return NextResponse.json({ error: '图片超过 5MB 限制' }, { status: 400 })
+    }
+
+    const ext = EXT_MAP[file.type]
+    const key = `avatars/${session.user.id}/${Date.now()}.${ext}`
+    const buffer = Buffer.from(await file.arrayBuffer())
+    const newUrl = await uploadFile(key, buffer, file.type)
+
+    const existing = await db.user.findUnique({
+      where: { id: session.user.id },
+      select: { avatarUrl: true },
+    })
+
+    if (existing?.avatarUrl) {
+      await deleteFile(keyFromUrl(existing.avatarUrl))
+    }
+
+    const updated = await db.user.update({
+      where: { id: session.user.id },
+      data: { avatarUrl: newUrl },
+      select: { avatarUrl: true },
+    })
+
+    return NextResponse.json(updated)
+  } catch (err) {
+    console.error('POST /api/profile/avatar error:', err)
+    return NextResponse.json({ error: '服务器错误' }, { status: 500 })
   }
-
-  const formData = await request.formData()
-  const file = formData.get('avatar') as File | null
-
-  if (!file) {
-    return NextResponse.json({ error: '未提供文件' }, { status: 400 })
-  }
-
-  if (!ALLOWED_TYPES.includes(file.type)) {
-    return NextResponse.json({ error: '不支持的图片格式' }, { status: 400 })
-  }
-
-  if (file.size > MAX_SIZE) {
-    return NextResponse.json({ error: '图片超过 5MB 限制' }, { status: 400 })
-  }
-
-  const ext = EXT_MAP[file.type]
-  const key = `avatars/${session.user.id}/${Date.now()}.${ext}`
-  const buffer = Buffer.from(await file.arrayBuffer())
-  const newUrl = await uploadFile(key, buffer, file.type)
-
-  const existing = await db.user.findUnique({
-    where: { id: session.user.id },
-    select: { avatarUrl: true },
-  })
-
-  if (existing?.avatarUrl) {
-    await deleteFile(keyFromUrl(existing.avatarUrl))
-  }
-
-  const updated = await db.user.update({
-    where: { id: session.user.id },
-    data: { avatarUrl: newUrl },
-    select: { avatarUrl: true },
-  })
-
-  return NextResponse.json(updated)
 }

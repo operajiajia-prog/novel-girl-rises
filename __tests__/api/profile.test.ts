@@ -101,6 +101,18 @@ describe('PATCH /api/profile', () => {
     expect(body.username).toBe('newname')
     expect(body.bio).toBe('hello')
   })
+
+  it('returns 500 on database error', async () => {
+    mockAuth.mockResolvedValueOnce({ user: { id: 'user1' } } as unknown as never)
+    mockFindUnique.mockRejectedValueOnce(new Error('DB error'))
+    const req = new Request('http://localhost/api/profile', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: 'newname' }),
+    })
+    const res = await PATCH(req)
+    expect(res.status).toBe(500)
+  })
 })
 
 describe('POST /api/profile/avatar', () => {
@@ -134,5 +146,12 @@ describe('POST /api/profile/avatar', () => {
     expect(body.avatarUrl).toBe('https://cdn.example.com/avatars/user1/123.jpg')
     expect(mockUploadFile).toHaveBeenCalled()
     expect(mockDeleteFile).toHaveBeenCalled()
+  })
+
+  it('returns 500 on database error', async () => {
+    mockAuth.mockResolvedValueOnce({ user: { id: 'user1' } } as unknown as never)
+    mockFindUnique.mockRejectedValueOnce(new Error('DB error'))
+    const res = await POST(makeAvatarRequest('avatar.jpg', 'image/jpeg', 1024))
+    expect(res.status).toBe(500)
   })
 })

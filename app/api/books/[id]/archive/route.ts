@@ -9,15 +9,20 @@ async function setArchived(
   { params }: Params,
   isArchived: boolean
 ) {
-  const session = await auth()
-  if (!session?.user?.id) return NextResponse.json({ error: '未登录' }, { status: 401 })
+  try {
+    const session = await auth()
+    if (!session?.user?.id) return NextResponse.json({ error: '未登录' }, { status: 401 })
 
-  const { id } = await params
-  const book = await db.book.findUnique({ where: { id, userId: session.user.id } })
-  if (!book) return NextResponse.json({ error: '书籍不存在' }, { status: 404 })
+    const { id } = await params
+    const book = await db.book.findUnique({ where: { id, userId: session.user.id } })
+    if (!book) return NextResponse.json({ error: '书籍不存在' }, { status: 404 })
 
-  const updated = await db.book.update({ where: { id, userId: session.user.id }, data: { isArchived } })
-  return NextResponse.json({ book: updated })
+    const updated = await db.book.update({ where: { id, userId: session.user.id }, data: { isArchived } })
+    return NextResponse.json({ book: updated })
+  } catch (err) {
+    console.error('archive route error:', err)
+    return NextResponse.json({ error: '服务器错误' }, { status: 500 })
+  }
 }
 
 export function POST(request: Request, ctx: Params) {

@@ -81,4 +81,11 @@ describe('POST /api/books/upload', () => {
       data: { userId: 'user1', actionType: 'BOOK_ADDED', bookId: 'book1' },
     })
   })
+
+  it('returns 500 on database error', async () => {
+    mockAuth.mockResolvedValueOnce({ user: { id: 'user1' } } as any)
+    mockCreate.mockRejectedValueOnce(new Error('DB error'))
+    const res = await POST(makeRequest('test.txt'))
+    expect(res.status).toBe(500)
+  })
 })

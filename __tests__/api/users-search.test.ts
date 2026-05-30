@@ -67,4 +67,19 @@ describe('GET /api/users/search', () => {
     const body = await res.json()
     expect(body.users).toHaveLength(0)
   })
+
+  it('returns 400 when q param is missing', async () => {
+    mockAuth.mockResolvedValueOnce({ user: { id: 'user1' } } as any)
+    const req = new Request('http://localhost/api/users/search')
+    const res = await GET(req)
+    expect(res.status).toBe(400)
+  })
+
+  it('returns 500 on database error', async () => {
+    mockAuth.mockResolvedValueOnce({ user: { id: 'user1' } } as any)
+    mockFindMany.mockRejectedValueOnce(new Error('DB error'))
+    const req = new Request('http://localhost/api/users/search?q=alice')
+    const res = await GET(req)
+    expect(res.status).toBe(500)
+  })
 })
