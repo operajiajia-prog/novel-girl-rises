@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import SettingsSheet from './SettingsSheet'
 import type { ReaderSettings } from './SettingsSheet'
+import TocDrawer from './TocDrawer'
 
 interface Chapter { index: number; title: string; content: string }
 interface BookInfo {
@@ -41,6 +42,7 @@ export default function ReaderClient({ book, chapters }: Props) {
   const [currentIndex, setCurrentIndex] = useState(book.chapterIndex)
   const [showOverlay, setShowOverlay] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+  const [showToc, setShowToc] = useState(false)
   const [settings, setSettings] = useState<ReaderSettings>(DEFAULT_SETTINGS)
   const containerRef = useRef<HTMLDivElement>(null)
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -135,9 +137,13 @@ export default function ReaderClient({ book, chapters }: Props) {
           >
             ← 返回
           </button>
-          <span style={{ color: 'var(--text-primary)', fontSize: '15px', fontWeight: 600 }}>
+          <button
+            type="button"
+            onClick={() => setShowToc(true)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-primary)', fontSize: '15px', fontWeight: 600, padding: '4px 8px' }}
+          >
             {book.title}
-          </span>
+          </button>
           <button
             type="button"
             onClick={() => setShowSettings(true)}
@@ -243,6 +249,15 @@ export default function ReaderClient({ book, chapters }: Props) {
           zIndex: 15,
           transition: 'width 300ms ease',
         }}
+      />
+
+      {/* TOC drawer */}
+      <TocDrawer
+        open={showToc}
+        onClose={() => setShowToc(false)}
+        chapters={chapters.map(c => ({ index: c.index, title: c.title }))}
+        currentIndex={currentIndex}
+        onJump={idx => setCurrentIndex(idx)}
       />
 
       {/* Settings sheet */}
