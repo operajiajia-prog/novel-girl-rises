@@ -64,7 +64,8 @@ export default function BookCard({ book, onStatusChange, onDelete }: BookCardPro
         {book.coverUrl ? (
           <Image
             src={book.coverUrl}
-            alt={book.title}
+            alt=""
+            aria-hidden="true"
             fill
             sizes="140px"
             style={{ objectFit: 'cover' }}
@@ -144,6 +145,7 @@ export default function BookCard({ book, onStatusChange, onDelete }: BookCardPro
             overflow: 'hidden',
           }}
           role="progressbar"
+          aria-label={`阅读进度 ${progress}%`}
           aria-valuenow={progress}
           aria-valuemin={0}
           aria-valuemax={100}

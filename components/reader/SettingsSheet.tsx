@@ -183,6 +183,7 @@ export default function SettingsSheet({ open, onClose, settings, onChange }: Pro
             <input
               data-testid="brightness-slider"
               type="range"
+              aria-label="亮度"
               min={70}
               max={100}
               step={5}
@@ -202,6 +203,7 @@ export default function SettingsSheet({ open, onClose, settings, onChange }: Pro
             <input
               data-testid="paragraph-spacing-slider"
               type="range"
+              aria-label="段落间距"
               min={0}
               max={20}
               step={2}
