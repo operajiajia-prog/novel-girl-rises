@@ -66,6 +66,7 @@ export default function BookCard({ book, onStatusChange, onDelete }: BookCardPro
             src={book.coverUrl}
             alt={book.title}
             fill
+            sizes="140px"
             style={{ objectFit: 'cover' }}
           />
         ) : (

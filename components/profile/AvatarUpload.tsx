@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 
 interface AvatarUploadProps {
   currentAvatarUrl: string | null
@@ -76,10 +77,12 @@ export default function AvatarUpload({
       }}
     >
       {previewUrl ? (
-        <img
+        <Image
           src={previewUrl}
           alt={username}
-          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+          width={72}
+          height={72}
+          style={{ objectFit: 'cover', display: 'block' }}
         />
       ) : (
         <span
@@ -107,16 +110,7 @@ export default function AvatarUpload({
           }}
           aria-hidden="true"
         >
-          <div
-            style={{
-              width: '24px',
-              height: '24px',
-              borderRadius: '50%',
-              border: '2px solid rgba(255,255,255,0.3)',
-              borderTopColor: 'white',
-              animation: 'spin 0.6s linear infinite',
-            }}
-          />
+          <div className="avatar-spinner" />
         </div>
       )}
 
@@ -125,11 +119,10 @@ export default function AvatarUpload({
         type="file"
         accept="image/*"
         onChange={handleFileChange}
+        aria-label="选择文件"
         style={{ display: 'none' }}
         tabIndex={-1}
       />
-
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </button>
   )
 }

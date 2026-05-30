@@ -1,3 +1,5 @@
+import Image from 'next/image'
+
 interface FriendRequestCardProps {
   requester: { id: string; username: string; avatarUrl?: string | null }
   onAccept: () => void
@@ -29,13 +31,16 @@ export default function FriendRequestCard({ requester, onAccept, onReject }: Fri
           alignItems: 'center',
           justifyContent: 'center',
           background: requester.avatarUrl ? 'transparent' : 'var(--accent-100)',
+          position: 'relative',
         }}
       >
         {requester.avatarUrl ? (
-          <img
+          <Image
             src={requester.avatarUrl}
             alt={requester.username}
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            width={48}
+            height={48}
+            style={{ objectFit: 'cover' }}
           />
         ) : (
           <span

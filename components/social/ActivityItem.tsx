@@ -1,3 +1,5 @@
+import Image from 'next/image'
+
 type ActivityType = 'BOOK_ADDED' | 'READING_STARTED' | 'BOOK_FINISHED' | 'BOOKLIST_UPDATED'
 
 export interface ActivityItemProps {
@@ -49,13 +51,16 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
           alignItems: 'center',
           justifyContent: 'center',
           background: user.avatarUrl ? 'transparent' : 'var(--accent-100)',
+          position: 'relative',
         }}
       >
         {user.avatarUrl ? (
-          <img
+          <Image
             src={user.avatarUrl}
             alt={user.username}
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            width={36}
+            height={36}
+            style={{ objectFit: 'cover' }}
           />
         ) : (
           <span

@@ -27,10 +27,9 @@ export default function StatsCard({ totalBooks, readingBooks, finishedBooks }: S
       {/* Finished books */}
       <div>
         <p
+          className="font-mono"
           style={{
-            fontFamily: '"JetBrains Mono", "SF Mono", monospace',
             fontSize: '22px',
-            fontVariantNumeric: 'tabular-nums',
             color: 'var(--text-primary)',
             margin: 0,
             lineHeight: 1.2,
@@ -52,10 +51,9 @@ export default function StatsCard({ totalBooks, readingBooks, finishedBooks }: S
       {/* Reading books */}
       <div>
         <p
+          className="font-mono"
           style={{
-            fontFamily: '"JetBrains Mono", "SF Mono", monospace',
             fontSize: '22px',
-            fontVariantNumeric: 'tabular-nums',
             color: 'var(--text-primary)',
             margin: 0,
             lineHeight: 1.2,
@@ -77,10 +75,9 @@ export default function StatsCard({ totalBooks, readingBooks, finishedBooks }: S
       {/* Completion rate */}
       <div>
         <p
+          className="font-mono"
           style={{
-            fontFamily: '"JetBrains Mono", "SF Mono", monospace',
             fontSize: '22px',
-            fontVariantNumeric: 'tabular-nums',
             color: 'var(--text-primary)',
             margin: 0,
             lineHeight: 1.2,

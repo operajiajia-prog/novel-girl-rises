@@ -1,3 +1,6 @@
+import Link from 'next/link'
+import Image from 'next/image'
+
 interface FriendCardProps {
   friend: { id: string; username: string; avatarUrl?: string | null }
   readingBook?: { title: string } | null
@@ -5,7 +8,8 @@ interface FriendCardProps {
 
 export default function FriendCard({ friend, readingBook }: FriendCardProps) {
   return (
-    <div
+    <Link
+      href={`/friends/${friend.id}`}
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -14,6 +18,8 @@ export default function FriendCard({ friend, readingBook }: FriendCardProps) {
         borderRadius: '12px',
         background: 'var(--bg-card)',
         border: '1px solid var(--border-subtle)',
+        textDecoration: 'none',
+        color: 'inherit',
       }}
     >
       {/* Avatar */}
@@ -28,13 +34,16 @@ export default function FriendCard({ friend, readingBook }: FriendCardProps) {
           alignItems: 'center',
           justifyContent: 'center',
           background: friend.avatarUrl ? 'transparent' : 'var(--accent-100)',
+          position: 'relative',
         }}
       >
         {friend.avatarUrl ? (
-          <img
+          <Image
             src={friend.avatarUrl}
             alt={friend.username}
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            width={48}
+            height={48}
+            style={{ objectFit: 'cover' }}
           />
         ) : (
           <span
@@ -78,6 +87,6 @@ export default function FriendCard({ friend, readingBook }: FriendCardProps) {
           {readingBook ? `正在读「${readingBook.title}」` : '暂无在读'}
         </p>
       </div>
-    </div>
+    </Link>
   )
 }

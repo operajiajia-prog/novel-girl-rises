@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import Image from 'next/image'
 
 interface SearchUser {
   id: string
@@ -114,6 +115,7 @@ export default function AddFriendModal({ onClose }: AddFriendModalProps) {
           placeholder="搜索用户名"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          aria-label="搜索用户"
           style={{
             width: '100%',
             padding: '10px 14px',
@@ -156,13 +158,16 @@ export default function AddFriendModal({ onClose }: AddFriendModalProps) {
                       alignItems: 'center',
                       justifyContent: 'center',
                       background: user.avatarUrl ? 'transparent' : 'var(--accent-100)',
+                      position: 'relative',
                     }}
                   >
                     {user.avatarUrl ? (
-                      <img
+                      <Image
                         src={user.avatarUrl}
                         alt={user.username}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        width={36}
+                        height={36}
+                        style={{ objectFit: 'cover' }}
                       />
                     ) : (
                       <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--accent-400)' }}>
