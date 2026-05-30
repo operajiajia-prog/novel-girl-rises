@@ -84,7 +84,7 @@ export default async function BookDetailPage({
             <p style={{ margin: '0 0 10px', fontSize: '14px', color: 'var(--text-secondary)' }}>{book.author}</p>
           )}
           <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '10px' }}>
-            <span style={{ padding: '3px 10px', borderRadius: '999px', background: 'var(--accent-100)', color: 'var(--accent-700)', fontSize: '12px', fontWeight: 600 }}>
+            <span style={{ padding: '3px 10px', borderRadius: '999px', background: 'var(--accent-100)', color: 'var(--accent-600)', fontSize: '12px', fontWeight: 600 }}>
               {STATUS_LABELS[book.status]}
             </span>
             {book.genre && (
@@ -92,6 +92,11 @@ export default async function BookDetailPage({
                 {book.genre}
               </span>
             )}
+            {book.tags && book.tags.map(tag => (
+              <span key={tag} style={{ padding: '3px 10px', borderRadius: '999px', background: 'var(--bg-elevated)', color: 'var(--text-muted)', fontSize: '12px' }}>
+                #{tag}
+              </span>
+            ))}
           </div>
           {book.chapterCount && book.chapterCount > 0 && (
             <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-muted)' }}>

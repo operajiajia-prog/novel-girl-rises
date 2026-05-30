@@ -55,9 +55,37 @@ export async function PATCH(
     const book = await db.book.findUnique({ where: { id, userId: session.user.id } })
     if (!book) return NextResponse.json({ error: '书籍不存在' }, { status: 404 })
 
-    const body = await request.json() as { status?: unknown }
-    const { status } = body
+    const body = await request.json() as {
+      status?: unknown
+      title?: string
+      author?: string | null
+      synopsis?: string | null
+      userNotes?: string | null
+      genre?: string | null
+      tags?: string[]
+    }
+    const { status, title, author, synopsis, userNotes, genre, tags } = body
 
+    // 元数据更新（编辑信息）
+    if (title !== undefined || synopsis !== undefined || userNotes !== undefined || author !== undefined || genre !== undefined || tags !== undefined) {
+      if (title !== undefined && (typeof title !== 'string' || title.trim() === '')) {
+        return NextResponse.json({ error: '书名不能为空' }, { status: 400 })
+      }
+      const updated = await db.book.update({
+        where: { id, userId: session.user.id },
+        data: {
+          ...(title !== undefined && { title: title.trim() }),
+          ...(author !== undefined && { author: author || null }),
+          ...(synopsis !== undefined && { synopsis: synopsis || null }),
+          ...(userNotes !== undefined && { userNotes: userNotes || null }),
+          ...(genre !== undefined && { genre: genre || null }),
+          ...(tags !== undefined && { tags }),
+        },
+      })
+      return NextResponse.json(updated)
+    }
+
+    // 状态更新
     if (!VALID_STATUSES.includes(status as BookStatus)) {
       return NextResponse.json({ error: '无效的状态值' }, { status: 400 })
     }

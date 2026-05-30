@@ -27,7 +27,7 @@ export default function BookCard({ book, onStatusChange, onDelete }: BookCardPro
 
   const cardContent = (
     <Link
-      href={`/reader/${book.id}`}
+      href={`/library/${book.id}`}
       style={{
         display: 'block',
         textDecoration: 'none',
