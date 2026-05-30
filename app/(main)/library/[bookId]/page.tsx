@@ -33,6 +33,11 @@ export default async function BookDetailPage({
   })
   if (!book) notFound()
 
+  const noteData = await db.readingNote.findUnique({
+    where: { userId_bookId: { userId: session.user.id, bookId } },
+    select: { statusText: true, updatedAt: true },
+  })
+
   const progress = book.chapterCount && book.chapterCount > 0
     ? Math.round((book.chapterIndex / book.chapterCount) * 100)
     : 0
@@ -112,7 +117,7 @@ export default async function BookDetailPage({
       )}
 
       {/* Actions */}
-      <BookDetailClient book={{ id: book.id, title: book.title, author: book.author, synopsis: book.synopsis, tags: book.tags, userNotes: book.userNotes, coverUrl: book.coverUrl, isArchived: book.isArchived }} />
+      <BookDetailClient book={{ id: book.id, title: book.title, author: book.author, synopsis: book.synopsis, tags: book.tags, userNotes: book.userNotes, coverUrl: book.coverUrl, isArchived: book.isArchived }} initialNote={noteData} />
     </div>
   )
 }

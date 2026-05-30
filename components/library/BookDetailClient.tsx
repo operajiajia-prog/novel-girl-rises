@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import BookEditModal from './BookEditModal'
+import ReviewModal from '@/components/books/ReviewModal'
 
 interface Props {
   book: {
@@ -16,13 +17,16 @@ interface Props {
     coverUrl?: string | null
     isArchived: boolean
   }
+  initialNote?: { statusText: string | null; updatedAt: Date } | null
 }
 
-export default function BookDetailClient({ book }: Props) {
+export default function BookDetailClient({ book, initialNote }: Props) {
   const router = useRouter()
   const [showEdit, setShowEdit] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [isArchived, setIsArchived] = useState(book.isArchived)
+  const [note, setNote] = useState<{ statusText: string | null } | null>(initialNote ?? null)
+  const [showReview, setShowReview] = useState(false)
 
   const handleSave = useCallback(() => {
     setShowEdit(false)
@@ -99,9 +103,42 @@ export default function BookDetailClient({ book }: Props) {
         </button>
       </div>
 
+      {/* Review section */}
+      <div style={{ marginTop: '24px', padding: '16px', background: 'var(--bg-elevated)', borderRadius: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+          <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>我的书评</span>
+          <button
+            type="button"
+            onClick={() => setShowReview(true)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px', color: 'var(--accent-400)' }}
+          >
+            {note?.statusText ? '编辑' : '写书评'}
+          </button>
+        </div>
+        {note?.statusText ? (
+          <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+            {note.statusText}
+          </p>
+        ) : (
+          <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-muted)', fontStyle: 'italic' }}>
+            还没有书评，读完后记录你的感受
+          </p>
+        )}
+      </div>
+
       {showEdit && (
         <BookEditModal book={book} onSave={handleSave} onClose={() => setShowEdit(false)} />
       )}
+
+      <ReviewModal
+        open={showReview}
+        onClose={() => setShowReview(false)}
+        bookId={book.id}
+        bookTitle={book.title}
+        initialText={note?.statusText ?? null}
+        onSaved={text => setNote({ statusText: text })}
+        onDeleted={() => setNote(null)}
+      />
 
       {showDeleteConfirm && (
         <>
