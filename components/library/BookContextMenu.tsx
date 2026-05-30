@@ -5,9 +5,10 @@ import { useRouter } from 'next/navigation'
 import type { BookStatus } from '@prisma/client'
 
 export interface BookContextMenuProps {
-  book: { id: string; status: BookStatus }
+  book: { id: string; status: BookStatus; title?: string }
   onStatusChange: (id: string, status: BookStatus) => void
   onDelete: (id: string) => void
+  onRecommend?: (id: string) => void
   children: React.ReactNode
 }
 
@@ -23,6 +24,7 @@ export default function BookContextMenu({
   book,
   onStatusChange,
   onDelete,
+  onRecommend,
   children,
 }: BookContextMenuProps) {
   const router = useRouter()
@@ -170,6 +172,28 @@ export default function BookContextMenu({
                 {STATUS_LABELS[status]}
               </button>
             ))}
+
+            {onRecommend && (
+              <button
+                role="menuitem"
+                type="button"
+                onClick={() => { closeMenu(); onRecommend(book.id) }}
+                style={{
+                  display: 'block',
+                  width: '100%',
+                  padding: '14px 20px',
+                  textAlign: 'left',
+                  background: 'none',
+                  border: 'none',
+                  borderBottom: '1px solid var(--border-default)',
+                  cursor: 'pointer',
+                  fontSize: '15px',
+                  color: 'var(--text-primary)',
+                }}
+              >
+                推荐给好友
+              </button>
+            )}
 
             <button
               role="menuitem"

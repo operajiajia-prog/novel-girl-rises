@@ -1,6 +1,6 @@
 import Image from 'next/image'
 
-type ActivityType = 'BOOK_ADDED' | 'READING_STARTED' | 'BOOK_FINISHED' | 'BOOKLIST_UPDATED'
+type ActivityType = 'BOOK_ADDED' | 'READING_STARTED' | 'BOOK_FINISHED' | 'BOOKLIST_UPDATED' | 'BOOK_RECOMMENDED'
 
 export interface ActivityItemProps {
   activity: {
@@ -22,6 +22,8 @@ function getActionText(actionType: ActivityType, bookTitle?: string): string {
       return `读完了「${bookTitle}」🎉`
     case 'BOOKLIST_UPDATED':
       return '更新了书单'
+    case 'BOOK_RECOMMENDED':
+      return `推荐了「${bookTitle}」给你`
   }
 }
 

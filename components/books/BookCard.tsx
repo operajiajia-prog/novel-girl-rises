@@ -1,13 +1,18 @@
+'use client'
+
+import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { BookStatus } from '@prisma/client'
 import BookContextMenu from '@/components/library/BookContextMenu'
+import RecommendModal from '@/components/books/RecommendModal'
 
 type BookCardProps = {
   book: {
     id: string
     title: string
     author?: string | null
+    synopsis?: string | null
     coverUrl?: string | null
     genre?: string | null
     status: string
@@ -20,6 +25,8 @@ type BookCardProps = {
 }
 
 export default function BookCard({ book, onStatusChange, onDelete }: BookCardProps) {
+  const [showRecommend, setShowRecommend] = useState(false)
+
   const progress =
     book.chapterCount && book.chapterCount > 0
       ? Math.round(((book.chapterIndex ?? 0) / book.chapterCount) * 100)
@@ -165,13 +172,22 @@ export default function BookCard({ book, onStatusChange, onDelete }: BookCardPro
 
   if (onStatusChange && onDelete) {
     return (
-      <BookContextMenu
-        book={{ id: book.id, status: book.status as BookStatus }}
-        onStatusChange={onStatusChange}
-        onDelete={onDelete}
-      >
-        {cardContent}
-      </BookContextMenu>
+      <>
+        <BookContextMenu
+          book={{ id: book.id, status: book.status as BookStatus, title: book.title }}
+          onStatusChange={onStatusChange}
+          onDelete={onDelete}
+          onRecommend={() => setShowRecommend(true)}
+        >
+          {cardContent}
+        </BookContextMenu>
+        <RecommendModal
+          open={showRecommend}
+          onClose={() => setShowRecommend(false)}
+          bookId={book.id}
+          bookTitle={book.title}
+        />
+      </>
     )
   }
 
