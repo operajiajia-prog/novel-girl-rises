@@ -21,22 +21,24 @@ export default function BookEditModal({ book, onSave, onClose }: BookEditModalPr
   const [author, setAuthor] = useState(book.author ?? '')
   const [synopsis, setSynopsis] = useState(book.synopsis ?? '')
   const [userNotes, setUserNotes] = useState(book.userNotes ?? '')
+  const [tagsInput, setTagsInput] = useState((book.tags ?? []).join('、'))
   const [saving, setSaving] = useState(false)
 
   const handleSave = useCallback(async () => {
     if (!title.trim()) return
     setSaving(true)
+    const tags = tagsInput.split(/[、,，\s]+/).map(t => t.trim()).filter(Boolean)
     try {
       const res = await fetch(`/api/books/${book.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, author: author || null, synopsis: synopsis || null, userNotes: userNotes || null }),
+        body: JSON.stringify({ title, author: author || null, synopsis: synopsis || null, userNotes: userNotes || null, tags }),
       })
       if (res.ok) onSave()
     } finally {
       setSaving(false)
     }
-  }, [book.id, title, author, synopsis, userNotes, onSave])
+  }, [book.id, title, author, synopsis, userNotes, tagsInput, onSave])
 
   const inputStyle = {
     width: '100%',
@@ -114,6 +116,16 @@ export default function BookEditModal({ book, onSave, onClose }: BookEditModalPr
               rows={4}
               style={{ ...inputStyle, resize: 'vertical' }}
               placeholder="简介（可选）"
+            />
+          </div>
+
+          <div>
+            <label style={labelStyle}>标签</label>
+            <input
+              value={tagsInput}
+              onChange={e => setTagsInput(e.target.value)}
+              style={inputStyle}
+              placeholder="用顿号或逗号分隔，如：言情、古风、爽文"
             />
           </div>
 

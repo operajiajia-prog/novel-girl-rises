@@ -177,7 +177,7 @@ export default function LibraryClient({ initialBooks, initialFilter = 'ALL' }: L
               style={{ position: 'relative', cursor: 'pointer' }}
               onClick={() => toggleSelect(book.id)}
             >
-              <BookCard book={book} onStatusChange={() => {}} onDelete={() => {}} />
+              <BookCard book={book} />
               {/* Checkbox overlay — positioned over BookCard, BookCard is not modified */}
               <div
                 style={{
