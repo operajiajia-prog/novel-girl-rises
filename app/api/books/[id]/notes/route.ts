@@ -34,8 +34,8 @@ export async function POST(request: Request, { params }: Ctx) {
     if (!book) return NextResponse.json({ error: '书籍不存在' }, { status: 404 })
 
     const { statusText } = await request.json()
-    if (typeof statusText !== 'string' || statusText.trim().length > 200) {
-      return NextResponse.json({ error: '书评不能超过 200 字' }, { status: 400 })
+    if (typeof statusText !== 'string' || statusText.trim().length === 0 || statusText.trim().length > 200) {
+      return NextResponse.json({ error: '书评须在 1–200 字之间' }, { status: 400 })
     }
 
     const note = await db.readingNote.upsert({

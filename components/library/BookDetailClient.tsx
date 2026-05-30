@@ -131,6 +131,7 @@ export default function BookDetailClient({ book, initialNote }: Props) {
       )}
 
       <ReviewModal
+        key={note?.statusText ?? '__empty__'}
         open={showReview}
         onClose={() => setShowReview(false)}
         bookId={book.id}

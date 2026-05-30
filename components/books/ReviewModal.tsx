@@ -17,14 +17,18 @@ const MAX_CHARS = 200
 export default function ReviewModal({ open, onClose, bookId, bookTitle, initialText, onSaved, onDeleted }: Props) {
   const [text, setText] = useState(initialText ?? '')
   const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   if (!open) return null
 
-  const overLimit = text.length > MAX_CHARS
+  const trimmed = text.trim()
+  const overLimit = trimmed.length > MAX_CHARS
+  const empty = trimmed.length === 0
 
   const handleSave = async () => {
-    if (overLimit || saving) return
+    if (overLimit || empty || saving) return
     setSaving(true)
+    setError(null)
     try {
       const res = await fetch(`/api/books/${bookId}/notes`, {
         method: 'POST',
@@ -32,9 +36,13 @@ export default function ReviewModal({ open, onClose, bookId, bookTitle, initialT
         body: JSON.stringify({ statusText: text }),
       })
       if (res.ok) {
-        onSaved(text)
+        onSaved(trimmed)
         onClose()
+      } else {
+        setError('保存失败，请重试')
       }
+    } catch {
+      setError('网络错误，请重试')
     } finally {
       setSaving(false)
     }
@@ -43,12 +51,17 @@ export default function ReviewModal({ open, onClose, bookId, bookTitle, initialT
   const handleDelete = async () => {
     if (!window.confirm('确定删除这条书评？')) return
     setSaving(true)
+    setError(null)
     try {
       const res = await fetch(`/api/books/${bookId}/notes`, { method: 'DELETE' })
       if (res.ok) {
         onDeleted()
         onClose()
+      } else {
+        setError('删除失败，请重试')
       }
+    } catch {
+      setError('网络错误，请重试')
     } finally {
       setSaving(false)
     }
@@ -102,11 +115,17 @@ export default function ReviewModal({ open, onClose, bookId, bookTitle, initialT
           }}
         />
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '4px', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '4px', marginBottom: error ? '8px' : '16px' }}>
           <span style={{ fontSize: '12px', color: overLimit ? 'var(--color-error, #f87171)' : 'var(--text-muted)' }}>
             {text.length}/{MAX_CHARS}
           </span>
         </div>
+
+        {error && (
+          <p style={{ margin: '0 0 12px', fontSize: '13px', color: 'var(--color-error, #f87171)' }}>
+            {error}
+          </p>
+        )}
 
         <div style={{ display: 'flex', gap: '8px' }}>
           <button
@@ -149,15 +168,15 @@ export default function ReviewModal({ open, onClose, bookId, bookTitle, initialT
           <button
             type="button"
             onClick={handleSave}
-            disabled={overLimit || saving}
+            disabled={overLimit || empty || saving}
             style={{
               flex: 1,
               padding: '10px',
               borderRadius: '10px',
               border: 'none',
-              background: overLimit || saving ? 'var(--bg-elevated)' : 'var(--accent-500)',
-              color: overLimit || saving ? 'var(--text-disabled)' : 'var(--text-on-accent, #ffffff)',
-              cursor: overLimit || saving ? 'not-allowed' : 'pointer',
+              background: overLimit || empty || saving ? 'var(--bg-elevated)' : 'var(--accent-500)',
+              color: overLimit || empty || saving ? 'var(--text-disabled)' : 'var(--text-on-accent, #ffffff)',
+              cursor: overLimit || empty || saving ? 'not-allowed' : 'pointer',
               fontSize: '14px',
               fontWeight: 600,
             }}
