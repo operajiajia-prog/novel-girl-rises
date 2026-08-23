@@ -5,7 +5,11 @@ A personal library and social reading app for Chinese web novels. You upload the
 annotate as you go, and see what your friends are reading.
 
 Next.js App Router · TypeScript · Prisma/PostgreSQL · Auth.js · Cloudflare R2
-**68 commits · 158 source files · 63 test files**
+**70 commits · 158 source files · 63 test files** · MIT licensed
+
+> Contributor identity was normalised before publishing: the history had carried
+> two identities for one person, one of them a local machine hostname that links
+> to no account. Nothing else about the history was changed.
 
 ---
 
