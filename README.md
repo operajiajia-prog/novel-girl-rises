@@ -5,7 +5,7 @@ A personal library and social reading app for Chinese web novels. You upload the
 annotate as you go, and see what your friends are reading.
 
 Next.js App Router · TypeScript · Prisma/PostgreSQL · Auth.js · Cloudflare R2
-**70 commits · 158 source files · 63 test files** · MIT licensed
+**71 commits · 158 source files · 63 test files · 479 tests** · MIT licensed
 
 > Contributor identity was normalised before publishing: the history had carried
 > two identities for one person, one of them a local machine hostname that links
@@ -96,15 +96,29 @@ answer neither, which is why they are separate again.
 
 ## Running it
 
+**To build it and run the tests, no database is needed.** `DATABASE_URL` has to
+be *set* so Prisma can generate its client, but it never has to be reachable —
+the placeholder in the example file is enough. This exact sequence is verified
+from a clean clone:
+
 ```bash
-cp .env.local.example .env.local   # Postgres, Auth.js secret, Cloudflare R2
+cp .env.local.example .env.local   # the placeholder DATABASE_URL is fine
 npm install
+npx prisma generate                # without this the build fails: Prisma's
+                                   # types are missing, so book.tags is untyped
+npm run build
+npm run test:run                   # 479 tests across 58 files
+```
+
+**To actually run it** you need a real Postgres, plus Auth.js and Cloudflare R2
+credentials in `.env.local`:
+
+```bash
 npx prisma migrate dev
 npm run dev
 ```
 
 ```bash
 npm test                 # vitest, watch mode
-npm run test:run         # vitest, single pass
-npx playwright test      # the e2e specs
+npx playwright test      # the 5 e2e specs, needs the app running
 ```
