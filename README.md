@@ -1,36 +1,106 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# novel-girl-rises · 崛起吧小说妹
 
-## Getting Started
+A personal library and social reading app for Chinese web novels. You upload the
+`.txt` files you already have, read them on any device with your position kept,
+annotate as you go, and see what your friends are reading.
 
-First, run the development server:
+Next.js App Router · TypeScript · Prisma/PostgreSQL · Auth.js · Cloudflare R2
+**68 commits · 158 source files · 63 test files**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## The problem it solves
+
+Chinese web novels circulate as bare `.txt` files — often several megabytes, no
+metadata, no chapter structure, and encoded in whatever the original site used.
+Generic e-readers handle them badly: the text arrives as mojibake, the whole
+book is one endless scroll, and your position is lost the moment you switch
+device.
+
+So the app has to do three unglamorous things well before any feature matters:
+decode the file correctly, find the chapters, and remember where you were.
+
+### Decoding
+
+Chinese `.txt` files are commonly GB18030, GBK or BIG5 rather than UTF-8, and
+they rarely say so. `lib/txt-parser/encoding.ts` checks for a UTF-8 BOM first,
+falls back to `chardet` detection, strips the BOM before decoding, and hands the
+buffer to `iconv-lite`. Getting this wrong is not a subtle bug — the reader
+shows a page of garbage.
+
+### Chapters
+
+`lib/txt-parser/chapters.ts` splits on Chinese chapter headings:
+
+```
+/^(第[零〇一二三四五六七八九十百千万\d]+[章节回篇卷][^\n]*)/gm
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+It accepts Chinese numerals and Arabic digits, and all five common chapter
+words (章 / 节 / 回 / 篇 / 卷). A file with no recognisable headings is not an
+error — it becomes a single chapter titled 正文, so an unstructured book still
+opens and still reads.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Position
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Reading progress is stored as `(chapterIndex, charOffset)` on the `Book` row,
+not as a scroll percentage. Character offsets survive re-parsing and re-rendering
+at a different font size or screen width, so picking the book up on a phone lands
+you on the same sentence you left on a laptop.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## What is in it
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Nine Prisma models, which is roughly the shape of the product:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Model | What it carries |
+|---|---|
+| `User`, `Friendship` | Accounts, and friend requests with a pending/accepted state |
+| `Book` | The file plus its shelf metadata — status, genre, tags, an emotion tag, synopsis, private notes, archive flag |
+| `Bookmark`, `Annotation`, `ReadingNote` | Three different things people do while reading, kept separate on purpose |
+| `Booklist`, `BooklistEntry` | Curated lists, so a shelf can be shared as a thing rather than a pile |
+| `ActivityFeed` | What friends have been reading, finishing and recommending |
 
-## Deploy on Vercel
+Routes cover a reader (`/reader/[bookId]`), a library with filtering and bulk
+actions, profiles, and a social feed. Uploads go to Cloudflare R2, single or
+batch.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Testing
+
+63 test files, organised by what they are protecting rather than by file
+structure:
+
+```
+__tests__/api/          22 route handlers, one file each
+__tests__/components/   24 components
+__tests__/journeys/     four end-to-end user flows (upload, reading, library, social)
+__tests__/edge-cases/   concurrency, reader boundaries, upload failures
+__tests__/a11y/         accessibility assertions on components
+__tests__/lib/          the txt parser: encoding, chapters, metadata
+e2e/                    5 Playwright specs, including a dedicated a11y spec
+```
+
+The `journeys/` and `edge-cases/` split is deliberate. Journey tests answer
+"can a person actually get through this"; edge-case tests answer "what happens
+when two of them do it at once, or the file is broken". Unit tests on the parser
+answer neither, which is why they are separate again.
+
+---
+
+## Running it
+
+```bash
+cp .env.local.example .env.local   # Postgres, Auth.js secret, Cloudflare R2
+npm install
+npx prisma migrate dev
+npm run dev
+```
+
+```bash
+npm test                 # vitest, watch mode
+npm run test:run         # vitest, single pass
+npx playwright test      # the e2e specs
+```
