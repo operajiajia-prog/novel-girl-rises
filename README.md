@@ -1,5 +1,7 @@
 # novel-girl-rises · 崛起吧小说妹
 
+[![CI](https://github.com/operajiajia-prog/novel-girl-rises/actions/workflows/ci.yml/badge.svg)](https://github.com/operajiajia-prog/novel-girl-rises/actions/workflows/ci.yml)
+
 A personal library and social reading app for Chinese web novels. You upload the
 `.txt` files you already have, read them on any device with your position kept,
 annotate as you go, and see what your friends are reading.

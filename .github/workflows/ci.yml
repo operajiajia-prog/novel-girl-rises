@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # DATABASE_URL only has to be *set* for prisma generate, never reachable —
+      # the placeholder in the example file is enough. Without the generate step
+      # the build fails on an implicit any: Prisma's types are simply absent.
+      - run: cp .env.local.example .env.local
+      - run: npx prisma generate
+      - run: npm run build
+      - run: npm run test:run
